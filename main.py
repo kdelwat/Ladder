@@ -1,10 +1,13 @@
 import csv
 from operator import itemgetter
 from tabulate import tabulate
+import random
 
 DRAW = 0
 WIN = 1
 LOSS = 2
+
+output = []
 
 
 class Ladder:
@@ -67,24 +70,39 @@ class Ladder:
                               row['Draw'],
                               row['Points']])
 
-        print(tabulate(printable, headers="firstrow"))
+        print(tabulate(printable, headers='firstrow'))
 
 
 def cricket(team1, team2):
     if team1['Strength'] == team2['Strength']:
-        return (DRAW, team1['Name'], team2['Name'])
+        result = DRAW
+        winner = team1['Name']
+        loser = team2['Name']
     elif team1['Strength'] > team2['Strength']:
+        result = WIN
         winner = team1['Name']
         loser = team2['Name']
     else:
+        result = WIN
         winner = team2['Name']
         loser = team1['Name']
-    return (WIN, winner, loser)
+
+    winning_runs = random.randint(120, 180)
+    winning_score = str(random.randint(5, 10)) + '/' + str(winning_runs)
+    if result == DRAW:
+        losing_score = str(random.randint(5, 10)) + '/' + str(winning_runs)
+    else:
+        losing_score = str(random.randint(5, 10)) + '/' + str(random.randint(80, winning_runs))
+
+    stats = {'Winning Score': winning_score,
+             'Losing Score': losing_score}
+    return (result, winner, loser, stats)
 
 
 def play(team1, team2, game, ladder):
     result = game(team1, team2)
     ladder.record_result(result)
+    return result
 
 
 def rotate_except_first(l):
@@ -98,7 +116,7 @@ def round_robin(teams):
     '''Generate a round-robin fixture using the algorithm from
        https://en.wikipedia.org/wiki/Round-robin_tournament'''
     if len(teams) % 2 != 0:
-        teams.append("BYE")
+        teams.append('BYE')
 
     number_of_rounds = len(teams) - 1
     rounds = []
@@ -125,16 +143,39 @@ def load_teams(filename):
     return teams
 
 
+def store(result, round_no):
+    print(result)
+    row = {'Round': round_no + 1}
+    if result[0] == DRAW:
+        row['Winner'] = result[1] + ', ' + result[2]
+        row['Loser'] = '-'
+    else:
+        row['Winner'] = result[1]
+        row['Loser'] = result[2]
+    for stat, value in result[3].items():
+        row[stat] = value
+
+    output.append(row)
+
+
+def output_data(filename):
+    with open(filename, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=["Round", "Winner", "Loser", "Winning Score", "Losing Score"])
+        writer.writeheader()
+        writer.writerows(output)
+
+
 def simple_simulate(teams):
     rounds = round_robin(teams)
     ladder = Ladder(len(rounds), teams)
 
-    for round in rounds:
+    for no, round in enumerate(rounds):
         for match in round:
-            play(match[0], match[1], cricket, ladder)
-
+            result = play(match[0], match[1], cricket, ladder)
+            store(result, no)
     ladder.sort_ladder()
     ladder.print_ladder()
+    output_data('out.csv')
 
 teams = load_teams('data.csv')
 simple_simulate(teams)
