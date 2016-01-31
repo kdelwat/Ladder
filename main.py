@@ -2,12 +2,14 @@ import csv
 
 DRAW = 0
 WIN = 1
+LOSS = 2
 
 
 class Ladder:
 
-    def __init__(self, rounds, teams):
+    def __init__(self, rounds, teams, points={WIN: 2, DRAW: 1, LOSS: 0}):
         self.rounds = rounds
+        self.points = points
         self.init_ladder(teams)
 
     def init_ladder(self, teams):
@@ -23,10 +25,18 @@ class Ladder:
     def record_result(self, result):
         if result[0] == WIN:
             self.ladder[result[1]]['Win'] += 1
+            self.ladder[result[1]]['Points'] = self.points[WIN]
+
             self.ladder[result[2]]['Loss'] += 1
+            self.ladder[result[2]]['Points'] = self.points[LOSS]
+
         elif result[0] == DRAW:
             self.ladder[result[1]]['Draw'] += 1
+            self.ladder[result[1]]['Points'] = self.points[DRAW]
+
             self.ladder[result[2]]['Draw'] += 1
+            self.ladder[result[2]]['Points'] = self.points[DRAW]
+
         else:
             raise ValueError('Result type not supported!')
 
