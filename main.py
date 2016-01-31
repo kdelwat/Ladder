@@ -40,7 +40,7 @@ class Ladder:
             if team['Name'] == name:
                 return index
         else:
-            raise KeyError('Team not found in ladder!')
+            raise KeyError('Team ' + str(name) + ' not found in ladder!')
 
     def record_win(self, team):
         self.ladder[self.team_index(team)]['Win'] += 1
@@ -72,7 +72,7 @@ class Ladder:
 
 def cricket(team1, team2):
     if team1['Strength'] == team2['Strength']:
-        return (DRAW, team1, team2)
+        return (DRAW, team1['Name'], team2['Name'])
     elif team1['Strength'] > team2['Strength']:
         winner = team1['Name']
         loser = team2['Name']
@@ -82,7 +82,7 @@ def cricket(team1, team2):
     return (WIN, winner, loser)
 
 
-def play(team1, team2, game):
+def play(team1, team2, game, ladder):
     result = game(team1, team2)
     ladder.record_result(result)
 
@@ -119,13 +119,22 @@ def round_robin(teams):
 def load_teams(filename):
     with open(filename) as f:
         reader = csv.DictReader(f)
-        return [team for team in reader]
+        teams = [team for team in reader]
+    for team in teams:
+        team['Strength'] = int(team['Strength'])
+    return teams
+
+
+def simple_simulate(teams):
+    rounds = round_robin(teams)
+    ladder = Ladder(len(rounds), teams)
+
+    for round in rounds:
+        for match in round:
+            play(match[0], match[1], cricket, ladder)
+
+    ladder.sort_ladder()
+    ladder.print_ladder()
 
 teams = load_teams('data.csv')
-ladder = Ladder(3, teams)
-play(teams[0], teams[1], cricket)
-play(teams[3], teams[4], cricket)
-ladder.sort_ladder()
-ladder.print_ladder()
-
-print(round_robin(['A', 'B', 'C', 'D', 'E']))
+simple_simulate(teams)
