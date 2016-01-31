@@ -1,5 +1,6 @@
 import csv
 from operator import itemgetter
+from tabulate import tabulate
 
 DRAW = 0
 WIN = 1
@@ -57,7 +58,15 @@ class Ladder:
         self.ladder.sort(key=itemgetter('Points'), reverse=True)
 
     def print_ladder(self):
-        print(self.ladder)
+        printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
+        for row in self.ladder:
+            printable.append([row['Name'],
+                              row['Win'],
+                              row['Loss'],
+                              row['Draw'],
+                              row['Points']])
+
+        print(tabulate(printable, headers="firstrow"))
 
 
 def cricket(team1, team2):
