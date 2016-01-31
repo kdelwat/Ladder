@@ -59,6 +59,7 @@ class Ladder:
 
     def print_ladder(self):
         printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
+
         for row in self.ladder:
             printable.append([row['Name'],
                               row['Win'],
@@ -86,6 +87,35 @@ def play(team1, team2, game):
     ladder.record_result(result)
 
 
+def rotate_except_first(l):
+    new = [l[0], l[-1]]
+    for i in range(2, len(l)):
+        new.append(l[i-1])
+    return new
+
+
+def round_robin(teams):
+    '''Generate a round-robin fixture using the algorithm from
+       https://en.wikipedia.org/wiki/Round-robin_tournament'''
+    if len(teams) % 2 != 0:
+        teams.append("BYE")
+
+    number_of_rounds = len(teams) - 1
+    rounds = []
+    for i in range(number_of_rounds):
+        # Split the list of teams into two halves and them zip them in matches.
+        # For example, 1 2 3 4 5 6, or:
+        # 1 2 3
+        # 6 5 4
+        # Would become,
+        # (1, 6), (2, 5), (3, 4)
+        matches = list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
+
+        rounds.append(matches)
+        teams = rotate_except_first(teams)
+    return rounds
+
+
 def load_teams(filename):
     with open(filename) as f:
         reader = csv.DictReader(f)
@@ -97,3 +127,5 @@ play(teams[0], teams[1], cricket)
 play(teams[3], teams[4], cricket)
 ladder.sort_ladder()
 ladder.print_ladder()
+
+print(round_robin(['A', 'B', 'C', 'D', 'E']))
