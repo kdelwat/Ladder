@@ -66,6 +66,7 @@ class Ladder:
         return self.ladder[:n]
 
     def print_ladder(self):
+        self.sort_ladder()
         printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
 
         for row in self.ladder:
@@ -191,20 +192,28 @@ def output_data(filename):
         writer.writerows(output)
 
 
-def simple_simulate(teams):
-    fixture = round_robin(teams)
-    ladder = Ladder(len(fixture), teams)
-
+def play_fixture(fixture, ladder):
     for no, round in enumerate(fixture):
         for match in round:
             result = play(match[0], match[1], cricket, ladder)
             store(result, no + 1)
-    ladder.sort_ladder()
+
+
+def simple_simulate(teams, structure, finals_structure, final_n=4):
+    # Simulate a league using the given teams, structure, finals structure,
+    # and number of league winners to move on to the finals.
+    fixture = structure(teams)
+    ladder = Ladder(len(fixture), teams)
+
+    play_fixture(fixture, ladder)
+
     ladder.print_ladder()
-    finalists = [team['Name'] for team in ladder.top(4)]
-    final = [team for team in teams if team['Name'] in finalists]
-    print(elimination(final))
+
+    finalist_names = [team['Name'] for team in ladder.top(final_n)]
+    finalists = [team for team in teams if team['Name'] in finalist_names]
+
+    print(finals_structure(finalists))
     output_data('out.csv')
 
 teams = load_teams('data.csv')
-simple_simulate(teams)
+simple_simulate(teams, round_robin, elimination)
