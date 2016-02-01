@@ -122,17 +122,20 @@ def rotate_except_first(l):
 
 
 def elimination(teams):
-    rounds = int(math.log(len(teams), 2))
-    for round in range(rounds):
-        print("Round number", round)
-        print(teams)
+    number_of_rounds = int(math.log(len(teams), 2))
+
+    for n in range(number_of_rounds):
         matches = loop_matches(teams)
-        print(matches)
+
+        # Play all matches in round
         results = [play(match[0], match[1], cricket, None) for match in matches]
+
         for result in results:
-            print("Result", result)
             store(result, "Finals " + str(round + 1))
+
+            # Eliminate losing teams
             teams = [team for team in teams if team['Name'] != result[2]]
+
     return teams
 
 
