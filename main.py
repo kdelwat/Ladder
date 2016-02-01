@@ -83,6 +83,27 @@ class Ladder:
         print(tabulate(printable, headers='firstrow'))
 
 
+def basic_game(team1, team2):
+    # A template for all games. The game must take two team dictionaries.
+
+    # If the game is won by a team, the result is set to the WIN constant.
+    # If the game is drawn, the result is set to the DRAW constant.
+    result = WIN
+
+    # If the game has a winner, the winner is set to the name of the winning
+    # team and the loser to the name of the losing team. In the event of a
+    # draw, order does not matter, but both variables must still be filled.
+    winner = team1['Name']
+    loser = team2['Name']
+
+    # All extra game statistics are stored in the stats dictionary. The key for
+    # each entry is the name of the statistic.
+    stats = {}
+
+    # The game must return this information in the following tuple format.
+    return (result, winner, loser, stats)
+
+
 def cricket(team1, team2):
     if team1['Strength'] == team2['Strength']:
         result = DRAW
