@@ -19,6 +19,8 @@ class Ladder:
         self.init_ladder(teams)
 
     def init_ladder(self, teams):
+        # Create a blank ladder with an entry for each team, including W/L/D/P
+        # statistics
         self.ladder = []
         for team in teams:
             entry = {}
@@ -40,6 +42,7 @@ class Ladder:
             raise ValueError('Result type not supported!')
 
     def team_index(self, name):
+        # Get the index of a team in the ladder by a given name.
         for index, team in enumerate(self.ladder):
             if team['Name'] == name:
                 return index
@@ -62,6 +65,7 @@ class Ladder:
         self.ladder.sort(key=itemgetter('Points'), reverse=True)
 
     def top(self, n):
+        # Return top n teams in ladder.
         self.sort_ladder()
         return self.ladder[:n]
 
