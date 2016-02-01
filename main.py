@@ -2,6 +2,7 @@ import csv
 from operator import itemgetter
 from tabulate import tabulate
 import random
+import math
 
 DRAW = 0
 WIN = 1
@@ -60,6 +61,10 @@ class Ladder:
     def sort_ladder(self):
         self.ladder.sort(key=itemgetter('Points'), reverse=True)
 
+    def top(self, n):
+        self.sort_ladder()
+        return self.ladder[:n]
+
     def print_ladder(self):
         printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
 
@@ -100,8 +105,11 @@ def cricket(team1, team2):
 
 
 def play(team1, team2, game, ladder):
+    print(team1)
+    print(team2)
     result = game(team1, team2)
-    ladder.record_result(result)
+    if ladder is not None:
+        ladder.record_result(result)
     return result
 
 
@@ -110,6 +118,31 @@ def rotate_except_first(l):
     for i in range(2, len(l)):
         new.append(l[i-1])
     return new
+
+
+def elimination(teams):
+    rounds = int(math.log(len(teams), 2))
+    for round in range(rounds):
+        print("Round number", round)
+        print(teams)
+        matches = loop_matches(teams)
+        print(matches)
+        results = [play(match[0], match[1], cricket, None) for match in matches]
+        for result in results:
+            print("Result", result)
+            store(result, "Finals " + str(round + 1))
+            teams = [team for team in teams if team['Name'] != result[2]]
+    return teams
+
+
+def loop_matches(teams):
+    # Split the list of teams into two halves and them zip them in matches.
+    # For example, 1 2 3 4 5 6, or:
+    # 1 2 3
+    # 6 5 4
+    # Would become,
+    # (1, 6), (2, 5), (3, 4)
+    return list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
 
 
 def round_robin(teams):
@@ -121,14 +154,7 @@ def round_robin(teams):
     number_of_rounds = len(teams) - 1
     rounds = []
     for i in range(number_of_rounds):
-        # Split the list of teams into two halves and them zip them in matches.
-        # For example, 1 2 3 4 5 6, or:
-        # 1 2 3
-        # 6 5 4
-        # Would become,
-        # (1, 6), (2, 5), (3, 4)
-        matches = list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
-
+        matches = loop_matches(teams)
         rounds.append(matches)
         teams = rotate_except_first(teams)
     return rounds
@@ -144,8 +170,8 @@ def load_teams(filename):
 
 
 def store(result, round_no):
-    print(result)
-    row = {'Round': round_no + 1}
+    print("Storing", result)
+    row = {'Round': round_no}
     if result[0] == DRAW:
         row['Winner'] = result[1] + ', ' + result[2]
         row['Loser'] = '-'
@@ -166,15 +192,18 @@ def output_data(filename):
 
 
 def simple_simulate(teams):
-    rounds = round_robin(teams)
-    ladder = Ladder(len(rounds), teams)
+    fixture = round_robin(teams)
+    ladder = Ladder(len(fixture), teams)
 
-    for no, round in enumerate(rounds):
+    for no, round in enumerate(fixture):
         for match in round:
             result = play(match[0], match[1], cricket, ladder)
-            store(result, no)
+            store(result, no + 1)
     ladder.sort_ladder()
     ladder.print_ladder()
+    finalists = [team['Name'] for team in ladder.top(4)]
+    final = [team for team in teams if team['Name'] in finalists]
+    print(elimination(final))
     output_data('out.csv')
 
 teams = load_teams('data.csv')
