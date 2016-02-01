@@ -274,13 +274,13 @@ def play_fixture(fixture, ladder, game):
             store(result, round_number + 1)
 
 
-def simple_simulate(teams, structure, finals_structure, final_n=4):
-    # Simulate a league using the given teams, structure, finals structure,
-    # and number of league winners to move on to the finals.
+def simple_simulate(teams, game, structure, finals_structure, final_n=4):
+    # Simulate a league using the given teams, game, structure, finals
+    # structure, and number of league winners to move on to the finals.
     fixture = structure(teams)
     ladder = Ladder(len(fixture), teams)
 
-    play_fixture(fixture, ladder, cricket)
+    play_fixture(fixture, ladder, game)
 
     ladder.print_ladder()
 
@@ -291,4 +291,4 @@ def simple_simulate(teams, structure, finals_structure, final_n=4):
     output_data('out.csv')
 
 teams = load_teams('data.csv')
-simple_simulate(teams, round_robin, elimination)
+simple_simulate(teams, cricket, round_robin, elimination)
