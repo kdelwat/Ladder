@@ -131,7 +131,7 @@ def elimination(teams):
         results = [play(match[0], match[1], cricket, None) for match in matches]
 
         for result in results:
-            store(result, "Finals " + str(round + 1))
+            store(result, "Finals " + str(n + 1))
 
             # Eliminate losing teams
             teams = [team for team in teams if team['Name'] != result[2]]
@@ -150,17 +150,22 @@ def loop_matches(teams):
 
 
 def round_robin(teams):
-    '''Generate a round-robin fixture using the algorithm from
-       https://en.wikipedia.org/wiki/Round-robin_tournament'''
+    # Generate a round-robin fixture using the algorithm from
+    # https://en.wikipedia.org/wiki/Round-robin_tournament
+
+    # Add a dummy team to support byes in competitions with an uneven number
+    # of teams.
     if len(teams) % 2 != 0:
         teams.append('BYE')
 
     number_of_rounds = len(teams) - 1
     rounds = []
-    for i in range(number_of_rounds):
+
+    for n in range(number_of_rounds):
         matches = loop_matches(teams)
         rounds.append(matches)
         teams = rotate_except_first(teams)
+
     return rounds
 
 
