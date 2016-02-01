@@ -160,7 +160,7 @@ def rotate_except_first(l):
     return new
 
 
-def elimination(teams):
+def elimination(teams, game):
     # Play a simple elimination fixture for the given teams.
 
     number_of_rounds = int(math.log(len(teams), 2))
@@ -169,10 +169,14 @@ def elimination(teams):
         matches = loop_matches(teams)
 
         # Play all matches in round
-        results = [play(match[0], match[1], cricket, None) for match in matches]
+        results = [play(match[0], match[1], game) for match in matches]
 
         for result in results:
             store(result, "Finals " + str(n + 1))
+
+            # Output match
+            print('\n' + result[1] + ' vs ' + result[2])
+            print("Winner:", result[1])
 
             # Eliminate losing teams
             teams = [team for team in teams if team['Name'] != result[2]]
@@ -287,7 +291,7 @@ def simple_simulate(teams, game, structure, finals_structure, final_n=4):
     finalist_names = [team['Name'] for team in ladder.top(final_n)]
     finalists = [team for team in teams if team['Name'] in finalist_names]
 
-    print(finals_structure(finalists))
+    finals_structure(finalists, cricket)
     output_data('out.csv')
 
 teams = load_teams('data.csv')
