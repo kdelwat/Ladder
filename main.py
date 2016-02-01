@@ -264,11 +264,14 @@ def output_data(filename):
         writer.writerows(output)
 
 
-def play_fixture(fixture, ladder):
-    for no, round in enumerate(fixture):
-        for match in round:
-            result = play(match[0], match[1], cricket, ladder)
-            store(result, no + 1)
+def play_fixture(fixture, ladder, game):
+    # Take a given fixture of matches (a list of lists of matches).
+    # Play each round, getting the result using the specified game
+    # and store the result.
+    for round_number, round_matches in enumerate(fixture):
+        for match in round_matches:
+            result = play(match[0], match[1], game, ladder)
+            store(result, round_number + 1)
 
 
 def simple_simulate(teams, structure, finals_structure, final_n=4):
@@ -277,7 +280,7 @@ def simple_simulate(teams, structure, finals_structure, final_n=4):
     fixture = structure(teams)
     ladder = Ladder(len(fixture), teams)
 
-    play_fixture(fixture, ladder)
+    play_fixture(fixture, ladder, cricket)
 
     ladder.print_ladder()
 
