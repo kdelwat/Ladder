@@ -231,14 +231,17 @@ def load_teams(filename):
 
 
 def store(result, round_no):
-    print("Storing", result)
+    # Format result into list and store in output buffer.
     row = {'Round': round_no}
+
     if result[0] == DRAW:
         row['Winner'] = result[1] + ', ' + result[2]
         row['Loser'] = '-'
     else:
         row['Winner'] = result[1]
         row['Loser'] = result[2]
+
+    # Add all statistics.
     for stat, value in result[3].items():
         row[stat] = value
 
@@ -246,8 +249,17 @@ def store(result, round_no):
 
 
 def output_data(filename):
+    # Flush output buffer to filename.
     with open(filename, 'w') as f:
-        writer = csv.DictWriter(f, fieldnames=["Round", "Winner", "Loser", "Winning Score", "Losing Score"])
+        # Add mandatory field names
+        fieldnames = ['Round', 'Winner', 'Loser']
+
+        # Add all other field names
+        fieldnames.extend([field for field in output[0].keys()
+                           if field not in fieldnames])
+
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+
         writer.writeheader()
         writer.writerows(output)
 
