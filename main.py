@@ -105,16 +105,22 @@ def cricket(team1, team2):
     return (result, winner, loser, stats)
 
 
-def play(team1, team2, game, ladder):
-    print(team1)
-    print(team2)
+def play(team1, team2, game, ladder=None):
+    # Return the result of a match played between two teams according to
+    # the rules of a given game. If a ladder is supplied, the result is
+    # recorded in the ladder.
     result = game(team1, team2)
+
     if ladder is not None:
         ladder.record_result(result)
+
     return result
 
 
 def rotate_except_first(l):
+    # Rotate a list of teams excluding the first team.
+    # For example,
+    # 1 2 3 4 5 6 -> 1 6 2 3 4 5
     new = [l[0], l[-1]]
     for i in range(2, len(l)):
         new.append(l[i-1])
@@ -122,6 +128,8 @@ def rotate_except_first(l):
 
 
 def elimination(teams):
+    # Play a simple elimination fixture for the given teams.
+
     number_of_rounds = int(math.log(len(teams), 2))
 
     for n in range(number_of_rounds):
