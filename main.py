@@ -105,28 +105,36 @@ def basic_game(team1, team2):
 
 
 def cricket(team1, team2):
+    # Simulate a game of cricket.
     if team1['Strength'] == team2['Strength']:
         result = DRAW
         winner = team1['Name']
         loser = team2['Name']
-    elif team1['Strength'] > team2['Strength']:
-        result = WIN
-        winner = team1['Name']
-        loser = team2['Name']
     else:
         result = WIN
-        winner = team2['Name']
-        loser = team1['Name']
+        if team1['Strength'] > team2['Strength']:
+            winner = team1['Name']
+            loser = team2['Name']
+        else:
+            winner = team2['Name']
+            loser = team1['Name']
 
+    # Generate winner statistics
     winning_runs = random.randint(120, 180)
-    winning_score = str(random.randint(5, 10)) + '/' + str(winning_runs)
+    winning_wickets = random.randint(5, 10)
+    winning_score = str(winning_wickets) + '/' + str(winning_runs)
+
     if result == DRAW:
-        losing_score = str(random.randint(5, 10)) + '/' + str(winning_runs)
+        losing_runs = winning_runs
     else:
-        losing_score = str(random.randint(5, 10)) + '/' + str(random.randint(80, winning_runs))
+        losing_runs = random.randint(80, winning_runs)
+
+    losing_wickets = random.randint(5, 10)
+    losing_score = str(losing_wickets) + '/' + str(losing_runs)
 
     stats = {'Winning Score': winning_score,
              'Losing Score': losing_score}
+
     return (result, winner, loser, stats)
 
 
