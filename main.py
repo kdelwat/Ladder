@@ -172,11 +172,11 @@ def elimination(teams, game):
         results = [play(match[0], match[1], game) for match in matches]
 
         for result in results:
-            store(result, "Finals " + str(n + 1))
+            store(result, 'Finals ' + str(n + 1))
 
             # Output match
             print('\n' + result[1] + ' vs ' + result[2])
-            print("Winner:", result[1])
+            print('Winner:', result[1])
 
             # Eliminate losing teams
             teams = [team for team in teams if team['Name'] != result[2]]
