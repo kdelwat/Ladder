@@ -210,12 +210,23 @@ def round_robin(teams):
     return rounds
 
 
+def convert_to_int(n):
+    try:
+        return int(n)
+    except ValueError:
+        return n
+
+
 def load_teams(filename):
     with open(filename) as f:
         reader = csv.DictReader(f)
         teams = [team for team in reader]
+
+    # Convert data to integer if possible.
     for team in teams:
-        team['Strength'] = int(team['Strength'])
+        for key in team:
+            team[key] = convert_to_int(team[key])
+
     return teams
 
 
