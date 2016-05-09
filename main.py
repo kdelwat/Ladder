@@ -1,8 +1,9 @@
 import csv
+import math
 from operator import itemgetter
 from tabulate import tabulate
-import random
-import math
+
+from sports import cricket
 
 DRAW = 0
 WIN = 1
@@ -104,40 +105,6 @@ def basic_game(team1, team2):
     return (result, winner, loser, stats)
 
 
-def cricket(team1, team2):
-    # Simulate a game of cricket.
-    if team1['Strength'] == team2['Strength']:
-        result = DRAW
-        winner = team1['Name']
-        loser = team2['Name']
-    else:
-        result = WIN
-        if team1['Strength'] > team2['Strength']:
-            winner = team1['Name']
-            loser = team2['Name']
-        else:
-            winner = team2['Name']
-            loser = team1['Name']
-
-    # Generate winner statistics
-    winning_runs = random.randint(120, 180)
-    winning_wickets = random.randint(5, 10)
-    winning_score = str(winning_wickets) + '/' + str(winning_runs)
-
-    if result == DRAW:
-        losing_runs = winning_runs
-    else:
-        losing_runs = random.randint(80, winning_runs)
-
-    losing_wickets = random.randint(5, 10)
-    losing_score = str(losing_wickets) + '/' + str(losing_runs)
-
-    stats = {'Winning Score': winning_score,
-             'Losing Score': losing_score}
-
-    return (result, winner, loser, stats)
-
-
 def play(team1, team2, game, ladder=None):
     # Return the result of a match played between two teams according to
     # the rules of a given game. If a ladder is supplied, the result is
@@ -194,9 +161,10 @@ def loop_matches(teams):
     return list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
 
 
-def round_robin(teams):
+def round_robin(teams, n=2):
     # Generate a round-robin fixture using the algorithm from
-    # https://en.wikipedia.org/wiki/Round-robin_tournament
+    # https://en.wikipedia.org/wiki/Round-robin_tournament. Teams
+    # will play each other n times.
 
     # Add a dummy team to support byes in competitions with an uneven number
     # of teams.
@@ -206,10 +174,11 @@ def round_robin(teams):
     number_of_rounds = len(teams) - 1
     rounds = []
 
-    for n in range(number_of_rounds):
-        matches = loop_matches(teams)
-        rounds.append(matches)
-        teams = rotate_except_first(teams)
+    for _ in range(n):
+        for r in range(number_of_rounds):
+            matches = loop_matches(teams)
+            rounds.append(matches)
+            teams = rotate_except_first(teams)
 
     return rounds
 
