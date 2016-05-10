@@ -89,6 +89,10 @@ def football(team1, team2):
 
 # Define default characteristics of each game.
 games = {'Cricket': {'parameters': ['Name', 'Strength'],
-                     'function_name':cricket},
+                     'function_name':cricket,
+                     'settings': {'max_runs':'180',
+                                  'min_runs':'120'}},
          'Football (soccer)': {'parameters': ['Name', 'Strength'],
-                               'function_name':football}}
+                               'function_name':football,
+                               'settings': {'max_goals':'3',
+                                            'min_goals':'1'}}}
