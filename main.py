@@ -29,18 +29,22 @@ class LadderApp(App):
         self.new_row.set_text('Input new row here with fields seperated by commas')
         self.new_row.set_on_change_listener(self, 'edit_table_row')
         
-        # Create function buttons and add callbacks
+        # Create function buttons and add callbacks, inside a HBox container
+        buttons = gui.HBox(width=200, height=20)
+        
         self.add_row = gui.Button('Add row')
         self.add_row.set_on_click_listener(self, 'add_table_row')
+        buttons.append(self.add_row)
+        
         self.delete_row = gui.Button('Delete row')
         self.delete_row.set_on_click_listener(self, 'delete_table_row')
+        buttons.append(self.delete_row)
            
         # Add widgets to main container
         self.container.append(self.teams_table)
         self.container.append(self.new_row)
-        self.container.append(self.add_row)
-        self.container.append(self.delete_row)
-
+        self.container.append(buttons)
+        
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 
         table.'''
