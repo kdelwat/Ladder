@@ -10,7 +10,7 @@ WIN = 1
 LOSS = 2
 
 output = []
-
+teams = []
 
 class Ladder:
 
@@ -23,6 +23,7 @@ class Ladder:
         # Create a blank ladder with an entry for each team, including W/L/D/P
         # statistics
         self.ladder = []
+
         for team in teams:
             entry = {}
             entry['Name'] = team['Name']
@@ -181,6 +182,22 @@ def load_teams(filename):
 
     return teams
 
+def add_teams(table):
+    '''Recieves a table from the GUI and converts it into a list of team 
+    dictionaries.'''
+    
+    # Isolate field list
+    fields = table.pop(0)
+    
+    # Loop through teams, converting each to dictionary and adding them to 
+    # global teams list
+    for row in table:
+        team = {}
+
+        for field in zip(fields, row):
+            team[field[0]] = field[1]
+
+        teams.append(team)
 
 def store(result, round_no):
     # Format result into list and store in output buffer.
@@ -226,7 +243,7 @@ def play_fixture(fixture, ladder, game):
             store(result, round_number + 1)
 
 
-def simple_simulate(teams, game, structure, finals_structure, final_n=4):
+def simple_simulate(teams=teams, game=football, structure=round_robin, finals_structure=elimination, final_n=4):
     # Simulate a league using the given teams, game, structure, finals
     # structure, and number of league winners to move on to the finals.
     fixture = structure(teams)
@@ -242,5 +259,6 @@ def simple_simulate(teams, game, structure, finals_structure, final_n=4):
     finals_structure(finalists, cricket)
     output_data('out.csv')
 
-teams = load_teams('data.csv')
-simple_simulate(teams, football, round_robin, elimination)
+# teams = load_teams('data.csv')
+
+# simple_simulate(teams, football, round_robin, elimination)

@@ -1,6 +1,8 @@
 import remi.gui as gui
 from remi import start, App
 
+import ladder
+
 class LadderApp(App):
     
     def __init__(self, *args):
@@ -19,13 +21,16 @@ class LadderApp(App):
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
 
-        # Create and initialise table
+        # Create and initialise table, where:
+        #   self.teams_table is the GUI element
+        #   self.teams is the data element for later processing
         self.teams_table_height = 20
         self.teams_table_entries = 0
         self.teams_table = gui.Table(width=200,
                                      height=self.teams_table_height,
                                      margin='10px')
         self.teams_table.from_2d_matrix([team_parameters])
+        self.teams = [team_parameters]
         
         # Create editable row
         self.new_row = gui.TextInput(width=200, height=20)
@@ -48,6 +53,14 @@ class LadderApp(App):
         self.container.append(self.new_row)
         self.container.append(buttons)
         
+        self.simulate = gui.Button('Simulate')
+        self.simulate.set_on_click_listener(self, 'store_teams')
+        self.container.append(self.simulate)
+        
+    def store_teams(self):
+        ladder.add_teams(self.teams)
+        ladder.simple_simulate()
+       
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 
         table.'''
@@ -60,14 +73,16 @@ class LadderApp(App):
         
         # Create TableRow by iterating through new parameters
         row = gui.TableRow()
-        
+        raw_row = []
         for item in row_parameters:
             row.append(gui.TableItem(item))
+            raw_row.append(item)
         
         # Add row to table, assigning it a new ID, and adjust table height to
         # fit new row
         self.teams_table_entries += 1
         self.teams_table.append(row, key=str(self.teams_table_entries))
+        self.teams.append(raw_row)
 
         self.teams_table_height += 20
         self.teams_table.set_size(200, self.teams_table_height)
@@ -84,6 +99,7 @@ class LadderApp(App):
             
             # Delete the last row
             self.teams_table.remove_child(last_row)
+            self.teams.pop()
         else:
             self.display_error('No rows to delete!')
         
