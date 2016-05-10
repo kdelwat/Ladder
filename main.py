@@ -10,7 +10,12 @@ class LadderApp(App):
         super(LadderApp, self).__init__(*args)
        
     def main(self):
-        self.container = gui.VBox(width=400, height=400)
+        self.base_width = 400
+        self.element_height = 20
+        self.side_padding = 50
+        
+        self.container = gui.VBox(width=self.base_width + 2 * self.side_padding,
+                                  height=400)
         
         self.error_message = gui.Label('')
         self.container.append(self.error_message)
@@ -28,14 +33,14 @@ class LadderApp(App):
         # Load sports from library specification.
         self.available_sports = sports.games
         
-        self.sport_dropdown = gui.DropDown(width=200, height=20)
+        self.sport_dropdown = gui.DropDown(width=self.base_width, height=self.element_height)
         self.sport_dropdown.set_on_change_listener(self, 'set_sport')
 
         # Loop through sports and add to dropdown        
         for sport in self.available_sports:
-            self.sport_dropdown.append(gui.DropDownItem(sport, width=200, height=20))
+            self.sport_dropdown.append(gui.DropDownItem(sport, width=self.base_width, height=self.element_height))
         
-        sport_select_container = gui.HBox(width=200, height=20)
+        sport_select_container = gui.HBox(width=self.base_width, height=self.element_height)
         sport_select_container.append(label)
         sport_select_container.append(self.sport_dropdown)
         
@@ -51,21 +56,21 @@ class LadderApp(App):
         # Create and initialise table, where:
         #   self.teams_table is the GUI element
         #   self.teams is the data element for later processing
-        self.teams_table_height = 20
+        self.teams_table_height = self.element_height
         self.teams_table_entries = 0
-        self.teams_table = gui.Table(width=200,
+        self.teams_table = gui.Table(width=self.base_width,
                                      height=self.teams_table_height,
                                      margin='10px')
         self.teams_table.from_2d_matrix([team_parameters])
         self.teams = [team_parameters]
         
         # Create editable row
-        self.new_row = gui.TextInput(width=200, height=20)
+        self.new_row = gui.TextInput(width=self.base_width, height=self.element_height)
         self.new_row.set_text('Input new row here with fields seperated by commas')
         self.new_row.set_on_change_listener(self, 'edit_table_row')
         
         # Create function buttons and add callbacks, inside a HBox container
-        buttons = gui.HBox(width=200, height=20)
+        buttons = gui.HBox(width=self.base_width, height=self.element_height)
         
         self.add_row = gui.Button('Add row')
         self.add_row.set_on_click_listener(self, 'add_table_row')
@@ -111,8 +116,8 @@ class LadderApp(App):
         self.teams_table.append(row, key=str(self.teams_table_entries))
         self.teams.append(raw_row)
 
-        self.teams_table_height += 20
-        self.teams_table.set_size(200, self.teams_table_height)
+        self.teams_table_height += self.element_height
+        self.teams_table.set_size(self.base_width, self.teams_table_height)
 
     def delete_table_row(self):
         '''Deletes last row in teams table.'''
