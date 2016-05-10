@@ -9,6 +9,9 @@ class LadderApp(App):
     def main(self):
         self.container = gui.VBox(width=400, height=400)
         
+        self.error_message = gui.Label('')
+        self.container.append(self.error_message)
+        
         self.editable_table(['Name', 'Strength'])
         
         return self.container
@@ -90,6 +93,6 @@ class LadderApp(App):
         self.new_team_parameters = value.split(',')
     
     def display_error(self, message):
-        pass
+        self.error_message.set_text(message)
 
 start(LadderApp, address='0.0.0.0', debug=True, start_browser=False)
