@@ -2,6 +2,7 @@ import remi.gui as gui
 from remi import start, App
 
 import ladder
+import sports
 
 class LadderApp(App):
     
@@ -13,11 +14,37 @@ class LadderApp(App):
         
         self.error_message = gui.Label('')
         self.container.append(self.error_message)
-        
+
+        self.sport_select()
         self.editable_table(['Name', 'Strength'])
         
         return self.container
     
+    def sport_select(self):
+        '''Builds sport selection area.'''
+        
+        label = gui.Label('Select sport to simulate:')
+
+        # Load sports from library specification.
+        self.available_sports = sports.games
+        
+        self.sport_dropdown = gui.DropDown(width=200, height=20)
+        self.sport_dropdown.set_on_change_listener(self, 'set_sport')
+
+        # Loop through sports and add to dropdown        
+        for sport in self.available_sports:
+            self.sport_dropdown.append(gui.DropDownItem(sport, width=200, height=20))
+        
+        sport_select_container = gui.HBox(width=200, height=20)
+        sport_select_container.append(label)
+        sport_select_container.append(self.sport_dropdown)
+        
+        self.container.append(sport_select_container)
+    
+    def set_sport(self, value):
+        '''On change in dropdown selection, set new selected sport.'''
+        self.sport = self.available_sports[value]
+
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
 
@@ -59,7 +86,7 @@ class LadderApp(App):
         
     def store_teams(self):
         ladder.add_teams(self.teams)
-        ladder.simple_simulate()
+        ladder.simple_simulate(game=self.sport)
        
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 

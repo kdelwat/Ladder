@@ -244,12 +244,12 @@ def play_fixture(fixture, ladder, game):
 
 
 def simple_simulate(teams=teams, game=football, structure=round_robin, finals_structure=elimination, final_n=4):
-    # Simulate a league using the given teams, game, structure, finals
-    # structure, and number of league winners to move on to the finals.
+    '''Simulate a league using the given teams, game, structure, finals
+    structure, and number of league winners to move on to the finals.'''
     fixture = structure(teams)
     ladder = Ladder(len(fixture), teams)
-
-    play_fixture(fixture, ladder, game)
+    
+    play_fixture(fixture, ladder, game['function_name'])
 
     ladder.print_ladder()
 

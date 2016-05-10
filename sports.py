@@ -5,7 +5,7 @@ import random
 DRAW = 0
 WIN = 1
 LOSS = 2
-
+     
 def basic_game(team1, team2):
     # A template for all games. The game must take two team dictionaries.
 
@@ -86,3 +86,9 @@ def football(team1, team2):
              'Losing Score': losing_goals}
 
     return (result, winner, loser, stats)
+
+# Define default characteristics of each game.
+games = {'Cricket': {'parameters': ['Name', 'Strength'],
+                     'function_name':cricket},
+         'Football (soccer)': {'parameters': ['Name', 'Strength'],
+                               'function_name':football}}
