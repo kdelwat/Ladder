@@ -174,16 +174,12 @@ def convert_to_int(n):
     except ValueError:
         return n
 
-
 def load_teams(filename):
-    with open(filename) as f:
-        reader = csv.DictReader(f)
-        teams = [team for team in reader]
+    '''Load teams from csv file filename as array'''
 
-    # Convert data to integer if possible.
-    for team in teams:
-        for key in team:
-            team[key] = convert_to_int(team[key])
+    with open(filename) as f:
+        reader = csv.reader(f)
+        teams = [team for team in reader]
 
     return teams
 

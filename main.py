@@ -291,18 +291,11 @@ class LadderApp(App):
     def load_table_teams(self):
         '''Load from file an array of teams, which are loaded into the
         editable teams table.'''
-        teams = [['Name','Strength'],
-        ['Melbourne Stars','8'],
-        ['Melbourne Renegades','5'],
-        ['Sydney Thunder','10'],
-        ['Sydney Sixers','6'],
-        ['Adelaide Strikers','7'],
-        ['Hobart Hurricanes','4'],
-        ['Brisbane Heat','5'],
-        ['Perth Scorchers','7']]
-        
-        # By running the function again, the widgets are overwritten with the
-        # values in the populate variable, namely the loaded teams.
+        teams = ladder.load_teams('data.csv')
+
+        # By running the build table function again, the widgets are 
+        # overwritten with the values in the populate variable, namely
+        # the loaded teams.
         self.editable_table(False, populate=teams)
 
     def store_teams(self):
