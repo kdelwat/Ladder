@@ -40,6 +40,11 @@ class LadderApp(App):
         for sport in self.available_sports:
             self.sport_dropdown.append(gui.DropDownItem(sport, width=self.base_width, height=self.element_height))
         
+        # Set default sport
+        first_sport = list(self.available_sports.keys())[0]
+        self.sport_dropdown.set_value(first_sport)
+        self.sport = self.available_sports[first_sport]
+                
         sport_select_container = gui.HBox(width=self.base_width, height=self.element_height)
         sport_select_container.append(label)
         sport_select_container.append(self.sport_dropdown)
