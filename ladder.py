@@ -141,7 +141,7 @@ def loop_matches(teams):
     return list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
 
 
-def round_robin(teams, n=2):
+def round_robin(teams, settings):
     # Generate a round-robin fixture using the algorithm from
     # https://en.wikipedia.org/wiki/Round-robin_tournament. Teams
     # will play each other n times.
@@ -150,11 +150,11 @@ def round_robin(teams, n=2):
     # of teams.
     if len(teams) % 2 != 0:
         teams.append('BYE')
-
+    
     number_of_rounds = len(teams) - 1
     rounds = []
-
-    for _ in range(n):
+    
+    for _ in range(settings['revolutions']):
         for r in range(number_of_rounds):
             matches = loop_matches(teams)
             rounds.append(matches)
@@ -246,13 +246,17 @@ def play_fixture(fixture, ladder, game):
 def simple_simulate(teams=teams, game=football, structure=round_robin, finals_structure=elimination, final_n=4):
     '''Simulate a league using the given teams, game, structure, finals
     structure, and number of league winners to move on to the finals.'''
-    fixture = structure(teams)
-    ladder = Ladder(len(fixture), teams)
-    
+
     # Sanitise settings by converting all fields possible to int.
     for key in game['settings']:
         game['settings'][key] = convert_to_int(game['settings'][key])
+    
+    for key in structure['settings']:
+        structure['settings'][key] = convert_to_int(structure['settings'][key])
         
+    fixture = structure['function_name'](teams, structure['settings'])
+    ladder = Ladder(len(fixture), teams)
+    
     play_fixture(fixture, ladder, game)
 
     ladder.print_ladder()
@@ -266,3 +270,10 @@ def simple_simulate(teams=teams, game=football, structure=round_robin, finals_st
 # teams = load_teams('data.csv')
 
 # simple_simulate(teams, football, round_robin, elimination)
+
+# Define default characteristics of each tournament and finals structure.
+tournament_structures = {'Round Robin': {'function_name':round_robin,
+                                         'settings': {'revolutions':'1'}}}
+
+finals_structures = {'Elimination': {'function_name':elimination,
+                                     'settings': {'top_teams':'4'}}}

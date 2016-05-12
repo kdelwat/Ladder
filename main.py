@@ -29,6 +29,11 @@ class LadderApp(App):
         '''Called by the next button in stage 1, initialise team table.'''
         parameters = self.sport['parameters']
         self.editable_table(parameters)
+    
+    def stage_3(self):
+        '''Called by the next button in stage 2, initialise tournament
+        settings.'''
+        self.tournament_select()
 
     def sport_select(self):
         '''Builds sport selection area.'''
@@ -97,7 +102,69 @@ class LadderApp(App):
 
         self.sport['settings'] = new_settings
 
+    def tournament_select(self):
+        '''Builds tournament selection area.'''
+        label = gui.Label('Tournament structure:')
+
+        # Load structures from library specification.
+        self.available_tournaments = ladder.tournament_structures
+        
+        self.tournament_dropdown = gui.DropDown(width=self.base_width, height=self.element_height)
+        self.tournament_dropdown.set_on_change_listener(self, 'set_tournament')
+
+        # Loop through tournaments and add to dropdown
+        for tournament in self.available_tournaments:
+            self.tournament_dropdown.append(gui.DropDownItem(tournament, width=self.base_width, height=self.element_height))
+        
+        # Set default tournament
+        first_tournament = list(self.available_tournaments.keys())[0]
+        self.tournament_dropdown.set_value(first_tournament)
+        self.tournament = self.available_tournaments[first_tournament]
+        
+        # Create button for settings and to finalise selection
+        tournament_settings_button = gui.Button('Settings')
+        tournament_settings_button.set_on_click_listener(self, 'tournament_settings_dialog')
+                
+        tournament_select_container = gui.HBox(width=self.base_width, height=self.element_height)
+        tournament_select_container.append(label)
+        tournament_select_container.append(self.tournament_dropdown)
+        tournament_select_container.append(tournament_settings_button)
+
+        # Add selection to main container and initialise settings panel
+        self.container.append(tournament_select_container)
     
+    def set_tournament(self, value):
+        '''On change in dropdown selection, set new selected tournament.'''
+        self.tournament = self.available_tournaments[value]
+        
+    def tournament_settings_dialog(self):
+        '''Build tournament settings dialog.'''
+
+        self.tournament_settings_dialog = gui.GenericDialog(title='Tournament Settings', width=self.base_width)
+
+        # Get the settings dictionary of the currently selected tournament.
+        # Loop through the dictionary, creating text fields for each setting
+        # populated with the default value and add each to the dialog with 
+        # the setting name as the unique identifier.        
+        for setting, default in self.tournament['settings'].items():
+            text_input = gui.TextInput(width=200)
+            text_input.set_value(default)
+            self.tournament_settings_dialog.add_field_with_label(setting, setting, text_input)
+        
+        self.tournament_settings_dialog.set_on_confirm_dialog_listener(self, 'tournament_settings_dialog_confirm')
+        self.tournament_settings_dialog.show(self)
+    
+    def tournament_settings_dialog_confirm(self):
+        '''When the tournament settings dialog is accepted, sets the tournament's settings to the new values.'''
+
+        new_settings = {}
+
+        for setting in self.tournament['settings']:
+            value = self.tournament_settings_dialog.get_field(setting).get_value()
+            new_settings[setting] = value
+
+        self.tournament['settings'] = new_settings
+
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
 
@@ -133,13 +200,18 @@ class LadderApp(App):
         self.container.append(self.new_row)
         self.container.append(buttons)
         
+        # Create button to run simulation and to advance to the next stage
         self.simulate = gui.Button('Simulate')
         self.simulate.set_on_click_listener(self, 'store_teams')
+        next_button = gui.Button('Next')
+        next_button.set_on_click_listener(self, 'stage_3')
+
         self.container.append(self.simulate)
+        self.container.append(next_button)
         
     def store_teams(self):
         ladder.add_teams(self.teams)
-        ladder.simple_simulate(game=self.sport)
+        ladder.simple_simulate(game=self.sport, structure=self.tournament)
     
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 
