@@ -248,19 +248,21 @@ def play_fixture(fixture, ladder, game):
             store(result, round_number + 1)
 
 
+def clean_dictionary(dic):
+    '''Convert each value in dictionary to int if possible.'''
+    for key in dic:
+        dic[key] = convert_to_int(dic[key])
+    return dic
+
+
 def simple_simulate(teams=teams, game=football, structure=round_robin, finals_structure=elimination, final_n=4):
     '''Simulate a league using the given teams, game, structure, finals
     structure, and number of league winners to move on to the finals.'''
 
     # Sanitise settings by converting all fields possible to int.
-    for key in game['settings']:
-        game['settings'][key] = convert_to_int(game['settings'][key])
-    
-    for key in structure['settings']:
-        structure['settings'][key] = convert_to_int(structure['settings'][key])
-        
-    for key in finals_structure['settings']:
-        finals_structure['settings'][key] = convert_to_int(finals_structure['settings'][key])
+    game['settings'] = clean_dictionary(game['settings'])
+    structure['settings'] = clean_dictionary(structure['settings'])
+    finals_structure['settings'] = clean_dictionary(finals_structure['settings'])    
         
     fixture = structure['function_name'](teams, structure['settings'])
     ladder = Ladder(len(fixture), teams)
