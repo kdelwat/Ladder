@@ -104,38 +104,63 @@ class LadderApp(App):
 
     def tournament_select(self):
         '''Builds tournament selection area.'''
-        label = gui.Label('Tournament structure:')
+        tournament_label = gui.Label('Tournament structure:')
+        finals_label = gui.Label('Finals structure:')
 
         # Load structures from library specification.
         self.available_tournaments = ladder.tournament_structures
+        self.available_finals = ladder.finals_structures
         
         self.tournament_dropdown = gui.DropDown(width=self.base_width, height=self.element_height)
         self.tournament_dropdown.set_on_change_listener(self, 'set_tournament')
-
+        
+        self.finals_dropdown = gui.DropDown(width=self.base_width, height=self.element_height)
+        self.finals_dropdown.set_on_change_listener(self, 'set_finals')
+        
         # Loop through tournaments and add to dropdown
         for tournament in self.available_tournaments:
             self.tournament_dropdown.append(gui.DropDownItem(tournament, width=self.base_width, height=self.element_height))
+            
+        for finals in self.available_finals:
+            self.finals_dropdown.append(gui.DropDownItem(finals, width=self.base_width, height=self.element_height))
         
         # Set default tournament
         first_tournament = list(self.available_tournaments.keys())[0]
         self.tournament_dropdown.set_value(first_tournament)
         self.tournament = self.available_tournaments[first_tournament]
         
-        # Create button for settings and to finalise selection
+        first_finals = list(self.available_finals.keys())[0]
+        self.finals_dropdown.set_value(first_finals)
+        self.finals = self.available_finals[first_finals]
+        
+        # Create button for settings
         tournament_settings_button = gui.Button('Settings')
         tournament_settings_button.set_on_click_listener(self, 'tournament_settings_dialog')
+        
+        finals_settings_button = gui.Button('Settings')
+        finals_settings_button.set_on_click_listener(self, 'finals_settings_dialog')
                 
         tournament_select_container = gui.HBox(width=self.base_width, height=self.element_height)
-        tournament_select_container.append(label)
+        tournament_select_container.append(tournament_label)
         tournament_select_container.append(self.tournament_dropdown)
         tournament_select_container.append(tournament_settings_button)
+        
+        finals_select_container = gui.HBox(width=self.base_width, height=self.element_height)
+        finals_select_container.append(finals_label)
+        finals_select_container.append(self.finals_dropdown)
+        finals_select_container.append(finals_settings_button)
 
         # Add selection to main container and initialise settings panel
         self.container.append(tournament_select_container)
+        self.container.append(finals_select_container)
     
     def set_tournament(self, value):
         '''On change in dropdown selection, set new selected tournament.'''
         self.tournament = self.available_tournaments[value]
+    
+    def set_finals(self, value):
+        '''On change in dropdown selection, set new selected finals.'''
+        self.finals = self.available_finals[value]
         
     def tournament_settings_dialog(self):
         '''Build tournament settings dialog.'''
@@ -164,6 +189,34 @@ class LadderApp(App):
             new_settings[setting] = value
 
         self.tournament['settings'] = new_settings
+        
+    def finals_settings_dialog(self):
+        '''Build finals settings dialog.'''
+
+        self.finals_settings_dialog = gui.GenericDialog(title='Finals Settings', width=self.base_width)
+
+        # Get the settings dictionary of the currently selected finals.
+        # Loop through the dictionary, creating text fields for each setting
+        # populated with the default value and add each to the dialog with 
+        # the setting name as the unique identifier.        
+        for setting, default in self.finals['settings'].items():
+            text_input = gui.TextInput(width=200)
+            text_input.set_value(default)
+            self.finals_settings_dialog.add_field_with_label(setting, setting, text_input)
+        
+        self.finals_settings_dialog.set_on_confirm_dialog_listener(self, 'finals_settings_dialog_confirm')
+        self.finals_settings_dialog.show(self)
+   
+    def finals_settings_dialog_confirm(self):
+        '''When the finals settings dialog is accepted, sets the finals' settings to the new values.'''
+
+        new_settings = {}
+
+        for setting in self.finals['settings']:
+            value = self.finals_settings_dialog.get_field(setting).get_value()
+            new_settings[setting] = value
+
+        self.finals['settings'] = new_settings
 
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
@@ -211,7 +264,7 @@ class LadderApp(App):
         
     def store_teams(self):
         ladder.add_teams(self.teams)
-        ladder.simple_simulate(game=self.sport, structure=self.tournament)
+        ladder.simple_simulate(game=self.sport, structure=self.tournament, finals_structure=self.finals)
     
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 

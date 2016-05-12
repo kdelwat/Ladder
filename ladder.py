@@ -107,13 +107,18 @@ def rotate_except_first(l):
     return new
 
 
-def elimination(teams, game):
+def elimination(teams, game, settings, ladder):
     # Play a simple elimination fixture for the given teams.
-
-    number_of_rounds = int(math.log(len(teams), 2))
+    
+    # Get the top n teams from the ladder to play in fixture
+    final_n = settings['top_teams']
+    finalist_names = [team['Name'] for team in ladder.top(final_n)]
+    finalists = [team for team in teams if team['Name'] in finalist_names]
+    
+    number_of_rounds = int(math.log(len(finalists), 2))
 
     for n in range(number_of_rounds):
-        matches = loop_matches(teams)
+        matches = loop_matches(finalists)
 
         # Play all matches in round
         results = [play(match[0], match[1], game) for match in matches]
@@ -126,9 +131,9 @@ def elimination(teams, game):
             print('Winner:', result[1])
 
             # Eliminate losing teams
-            teams = [team for team in teams if team['Name'] != result[2]]
+            finalists = [finalist for finalist in finalists if finalist['Name'] != result[2]]
 
-    return teams
+    return finalists
 
 
 def loop_matches(teams):
@@ -254,6 +259,9 @@ def simple_simulate(teams=teams, game=football, structure=round_robin, finals_st
     for key in structure['settings']:
         structure['settings'][key] = convert_to_int(structure['settings'][key])
         
+    for key in finals_structure['settings']:
+        finals_structure['settings'][key] = convert_to_int(finals_structure['settings'][key])
+        
     fixture = structure['function_name'](teams, structure['settings'])
     ladder = Ladder(len(fixture), teams)
     
@@ -264,7 +272,8 @@ def simple_simulate(teams=teams, game=football, structure=round_robin, finals_st
     finalist_names = [team['Name'] for team in ladder.top(final_n)]
     finalists = [team for team in teams if team['Name'] in finalist_names]
 
-    finals_structure(finalists, game)
+    finals_structure['function_name'](finalists, game, finals_structure['settings'], ladder)
+    
     output_data('out.csv')
 
 # teams = load_teams('data.csv')
