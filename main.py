@@ -19,12 +19,17 @@ class LadderApp(App):
         
         self.error_message = gui.Label('')
         self.container.append(self.error_message)
-
+        
+        # Begin first stage (sport selection)
         self.sport_select()
-        self.editable_table(['Name', 'Strength'])
         
         return self.container
-    
+
+    def stage_2(self):
+        '''Called by the next button in stage 1, initialise team table.'''
+        parameters = self.sport['parameters']
+        self.editable_table(parameters)
+
     def sport_select(self):
         '''Builds sport selection area.'''
         
@@ -44,17 +49,22 @@ class LadderApp(App):
         first_sport = list(self.available_sports.keys())[0]
         self.sport_dropdown.set_value(first_sport)
         self.sport = self.available_sports[first_sport]
+        
+        # Create button to finalise selection
+        next_button = gui.Button('Next')
+        next_button.set_on_click_listener(self, 'stage_2')
                 
         sport_select_container = gui.HBox(width=self.base_width, height=self.element_height)
         sport_select_container.append(label)
         sport_select_container.append(self.sport_dropdown)
-        
+        sport_select_container.append(next_button)
+                
         self.container.append(sport_select_container)
     
     def set_sport(self, value):
         '''On change in dropdown selection, set new selected sport.'''
         self.sport = self.available_sports[value]
-
+    
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
 

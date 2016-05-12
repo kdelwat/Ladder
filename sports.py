@@ -92,7 +92,7 @@ games = {'Cricket': {'parameters': ['Name', 'Strength'],
                      'function_name':cricket,
                      'settings': {'max_runs':'180',
                                   'min_runs':'120'}},
-         'Football (soccer)': {'parameters': ['Name', 'Strength'],
+         'Football (soccer)': {'parameters': ['Name', 'Strength', 'Goals'],
                                'function_name':football,
                                'settings': {'max_goals':'3',
                                             'min_goals':'1'}}}
