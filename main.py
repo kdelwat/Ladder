@@ -22,7 +22,7 @@ class LadderApp(App):
         
         # Begin first stage (sport selection)
         self.sport_select()
-        
+                
         return self.container
 
     def stage_2(self):
@@ -218,7 +218,7 @@ class LadderApp(App):
 
         self.finals['settings'] = new_settings
 
-    def editable_table(self, team_parameters):
+    def editable_table(self, team_parameters, populate=False):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
 
         # Create and initialise table, where:
@@ -229,8 +229,29 @@ class LadderApp(App):
         self.teams_table = gui.Table(width=self.base_width,
                                      height=self.teams_table_height,
                                      margin='10px')
-        self.teams_table.from_2d_matrix([team_parameters])
-        self.teams = [team_parameters]
+        
+        # The populate variable may be a table array, in which case the table is pre-populated
+        if populate is not False:
+            # Set internal teams structure to the whole populate array
+            self.teams = populate
+            
+            # Set GUI table to the first row of the populate array, namely the 
+            # list of parameters.
+            self.teams_table.from_2d_matrix([populate[0]])
+            
+            # Loop through remaining teams, building rows
+            for team in populate[1:]:
+                row = gui.TableRow()
+                for item in team:
+                    row.append(gui.TableItem(item))
+                
+                # Add row to table, assigning it a new ID
+                self.teams_table_entries += 1
+                self.teams_table.append(row, key=str(self.teams_table_entries))
+        else:
+            # Othwerwise, just create a table with the supplied parameters.
+            self.teams_table.from_2d_matrix([team_parameters])
+            self.teams = [team_parameters]
         
         # Create editable row
         self.new_row = gui.TextInput(width=self.base_width, height=self.element_height)
@@ -247,11 +268,16 @@ class LadderApp(App):
         self.delete_row = gui.Button('Delete row')
         self.delete_row.set_on_click_listener(self, 'delete_table_row')
         buttons.append(self.delete_row)
+        
+        self.load_teams = gui.Button('Load teams')
+        self.load_teams.set_on_click_listener(self, 'load_table_teams')
+        buttons.append(self.load_teams)
            
-        # Add widgets to main container
-        self.container.append(self.teams_table)
-        self.container.append(self.new_row)
-        self.container.append(buttons)
+        # Add widgets to main container. Keys are specified to ensure that
+        # the table is replaced in case of loading.
+        self.container.append(self.teams_table, key='teams_table')
+        self.container.append(self.new_row, key='new_row')
+        self.container.append(buttons, key='buttons')
         
         # Create button to run simulation and to advance to the next stage
         self.simulate = gui.Button('Simulate')
@@ -259,11 +285,29 @@ class LadderApp(App):
         next_button = gui.Button('Next')
         next_button.set_on_click_listener(self, 'stage_3')
 
-        self.container.append(self.simulate)
-        self.container.append(next_button)
+        self.container.append(self.simulate, key='simulate')
+        self.container.append(next_button, key='next_button')
+    
+    def load_table_teams(self):
+        '''Load from file an array of teams, which are loaded into the
+        editable teams table.'''
+        teams = [['Name','Strength'],
+        ['Melbourne Stars','8'],
+        ['Melbourne Renegades','5'],
+        ['Sydney Thunder','10'],
+        ['Sydney Sixers','6'],
+        ['Adelaide Strikers','7'],
+        ['Hobart Hurricanes','4'],
+        ['Brisbane Heat','5'],
+        ['Perth Scorchers','7']]
         
+        # By running the function again, the widgets are overwritten with the
+        # values in the populate variable, namely the loaded teams.
+        self.editable_table(False, populate=teams)
+
     def store_teams(self):
         ladder.add_teams(self.teams)
+        print('Add teams:' + str(self.teams))
         ladder.simple_simulate(game=self.sport, structure=self.tournament, finals_structure=self.finals)
     
     def add_table_row(self):
