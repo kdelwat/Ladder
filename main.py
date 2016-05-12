@@ -272,6 +272,10 @@ class LadderApp(App):
         self.load_teams = gui.Button('Load teams')
         self.load_teams.set_on_click_listener(self, 'load_table_teams')
         buttons.append(self.load_teams)
+        
+        self.save_teams = gui.Button('Save teams')
+        self.save_teams.set_on_click_listener(self, 'save_table_teams')
+        buttons.append(self.save_teams)
            
         # Add widgets to main container. Keys are specified to ensure that
         # the table is replaced in case of loading.
@@ -297,6 +301,10 @@ class LadderApp(App):
         # overwritten with the values in the populate variable, namely
         # the loaded teams.
         self.editable_table(False, populate=teams)
+    
+    def save_table_teams(self):
+        '''Saves the internal teams array to a file.'''
+        ladder.save_teams(self.teams, 'teamout.csv')
 
     def store_teams(self):
         ladder.add_teams(self.teams)

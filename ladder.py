@@ -183,6 +183,15 @@ def load_teams(filename):
 
     return teams
 
+def save_teams(team_array, filename):
+    '''Saves team_array to filename.'''
+    
+    with open(filename, 'w') as f:
+        writer = csv.writer(f, delimiter=',')
+        
+        for row in team_array:
+            writer.writerow(row)
+    
 def add_teams(table):
     '''Recieves a table from the GUI and converts it into a list of team 
     dictionaries.'''
