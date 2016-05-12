@@ -6,7 +6,7 @@ DRAW = 0
 WIN = 1
 LOSS = 2
      
-def basic_game(team1, team2):
+def basic_game(team1, team2, settings):
     # A template for all games. The game must take two team dictionaries.
 
     # If the game is won by a team, the result is set to the WIN constant.
@@ -26,7 +26,7 @@ def basic_game(team1, team2):
     # The game must return this information in the following tuple format.
     return (result, winner, loser, stats)
 
-def cricket(team1, team2):
+def cricket(team1, team2, settings):
     # Simulate a game of cricket.
     if team1['Strength'] == team2['Strength']:
         result = DRAW
@@ -42,7 +42,7 @@ def cricket(team1, team2):
             loser = team1['Name']
 
     # Generate winner statistics
-    winning_runs = random.randint(120, 180)
+    winning_runs = random.randint(settings['min_runs'], settings['max_runs'])
     winning_wickets = random.randint(5, 10)
     winning_score = str(winning_wickets) + '/' + str(winning_runs)
 
@@ -59,7 +59,7 @@ def cricket(team1, team2):
 
     return (result, winner, loser, stats)
 
-def football(team1, team2):
+def football(team1, team2, settings):
     # Simulate a game of football (soccer).
     if team1['Strength'] == team2['Strength']:
         result = DRAW

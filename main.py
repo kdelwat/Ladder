@@ -10,7 +10,7 @@ class LadderApp(App):
         super(LadderApp, self).__init__(*args)
        
     def main(self):
-        self.base_width = 400
+        self.base_width = 500
         self.element_height = 20
         self.side_padding = 50
         
@@ -50,20 +50,53 @@ class LadderApp(App):
         self.sport_dropdown.set_value(first_sport)
         self.sport = self.available_sports[first_sport]
         
-        # Create button to finalise selection
+        # Create button for settings and to finalise selection
+        settings_button = gui.Button('Settings')
+        settings_button.set_on_click_listener(self, 'sport_settings_dialog')
         next_button = gui.Button('Next')
         next_button.set_on_click_listener(self, 'stage_2')
                 
         sport_select_container = gui.HBox(width=self.base_width, height=self.element_height)
         sport_select_container.append(label)
         sport_select_container.append(self.sport_dropdown)
+        sport_select_container.append(settings_button)
         sport_select_container.append(next_button)
-                
+        
+        # Add selection to main container and initialise settings panel
         self.container.append(sport_select_container)
     
     def set_sport(self, value):
         '''On change in dropdown selection, set new selected sport.'''
         self.sport = self.available_sports[value]
+        
+    def sport_settings_dialog(self):
+        '''Build sport settings dialog.'''
+
+        self.settings_dialog = gui.GenericDialog(title='Sport Settings', width=self.base_width)
+
+        # Get the settings dictionary of the currently selected sport. Loop 
+        # through the dictionary, creating text fields for each setting
+        # populated with the default value and add each to the dialog with 
+        # the setting name as the unique identifier.        
+        for setting, default in self.sport['settings'].items():
+            text_input = gui.TextInput(width=200)
+            text_input.set_value(default)
+            self.settings_dialog.add_field_with_label(setting, setting, text_input)
+        
+        self.settings_dialog.set_on_confirm_dialog_listener(self, 'sport_settings_dialog_confirm')
+        self.settings_dialog.show(self)
+    
+    def sport_settings_dialog_confirm(self):
+        '''When the sport settings dialog is accepted, sets the current sport's settings to the new values.'''
+
+        new_settings = {}
+
+        for setting in self.sport['settings']:
+            value = self.settings_dialog.get_field(setting).get_value()
+            new_settings[setting] = value
+
+        self.sport['settings'] = new_settings
+
     
     def editable_table(self, team_parameters):
         '''Builds editable table for team settings, with columns specified in the team_parameters list.'''
@@ -107,7 +140,7 @@ class LadderApp(App):
     def store_teams(self):
         ladder.add_teams(self.teams)
         ladder.simple_simulate(game=self.sport)
-       
+    
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 
         table.'''

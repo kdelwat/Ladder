@@ -89,7 +89,7 @@ def play(team1, team2, game, ladder=None):
     # Return the result of a match played between two teams according to
     # the rules of a given game. If a ladder is supplied, the result is
     # recorded in the ladder.
-    result = game(team1, team2)
+    result = game['function_name'](team1, team2, game['settings'])
 
     if ladder is not None:
         ladder.record_result(result)
@@ -249,14 +249,18 @@ def simple_simulate(teams=teams, game=football, structure=round_robin, finals_st
     fixture = structure(teams)
     ladder = Ladder(len(fixture), teams)
     
-    play_fixture(fixture, ladder, game['function_name'])
+    # Sanitise settings by converting all fields possible to int.
+    for key in game['settings']:
+        game['settings'][key] = convert_to_int(game['settings'][key])
+        
+    play_fixture(fixture, ladder, game)
 
     ladder.print_ladder()
 
     finalist_names = [team['Name'] for team in ladder.top(final_n)]
     finalists = [team for team in teams if team['Name'] in finalist_names]
 
-    finals_structure(finalists, cricket)
+    finals_structure(finalists, game)
     output_data('out.csv')
 
 # teams = load_teams('data.csv')
