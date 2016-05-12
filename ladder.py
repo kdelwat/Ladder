@@ -200,7 +200,7 @@ def add_teams(table):
         team = {}
 
         for field in zip(fields, row):
-            team[field[0]] = field[1]
+            team[field[0]] = convert_to_int(field[1])
 
         teams.append(team)
 
