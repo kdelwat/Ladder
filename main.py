@@ -319,6 +319,7 @@ class LadderApp(App):
             row_parameters = self.new_team_parameters
         except AttributeError:
             self.display_error('No new data inputted!')
+            return 1
         
         # Create TableRow by iterating through new parameters
         row = gui.TableRow()
