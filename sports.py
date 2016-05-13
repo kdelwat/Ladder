@@ -28,23 +28,21 @@ def basic_game(team1, team2, teams, settings):
 
 def cricket(team1, team2, teams, settings):
     '''Simulate a game of cricket.'''
-    
-    # Look up team statistics
-    team1_stats = teams[team1]
-    team2_stats = teams[team2]
-    
-    if team1_stats['Strength'] == team2_stats['Strength']:
+        
+    if teams[team1]['Strength'] == teams[team2]['Strength']:
         result = DRAW
         winner = team1
         loser = team2
     else:
         result = WIN
-        if team1_stats['Strength'] > team2_stats['Strength']:
+        if teams[team1]['Strength'] > teams[team2]['Strength']:
             winner = team1
             loser = team2
+            teams[team2]['Strength'] += 1
         else:
             winner = team2
             loser = team1
+            teams[team1]['Strength'] += 1
 
     # Generate winner statistics
     winning_runs = random.randint(settings['min_runs'], settings['max_runs'])
@@ -61,23 +59,20 @@ def cricket(team1, team2, teams, settings):
 
     stats = {'Winning Score': winning_score,
              'Losing Score': losing_score}
-
-    return (result, winner, loser, stats)
+    
+    # Return results tuple and modified teams dictionary
+    return ((result, winner, loser, stats), teams)
 
 def football(team1, team2, teams, settings):
     '''Simulate a game of football (soccer).'''
     
-    # Look up team statistics
-    team1_stats = teams[team1]
-    team2_stats = teams[team2]
-    
-    if team1_stats['Strength'] == team2_stats['Strength']:
+    if teams[team1]['Strength'] == teams[team2]['Strength']:
         result = DRAW
         winner = team1
         loser = team2
     else:
         result = WIN
-        if team1_stats['Strength'] > team2_stats['Strength']:
+        if teams[team1]['Strength'] > teams[team2]['Strength']:
             winner = team1
             loser = team2
         else:
