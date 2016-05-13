@@ -15,7 +15,7 @@ class LadderApp(App):
         self.side_padding = 50
         
         self.container = gui.VBox(width=self.base_width + 2 * self.side_padding,
-                                  height=400)
+                                  height=800)
         
         self.error_message = gui.Label('')
         self.container.append(self.error_message)
