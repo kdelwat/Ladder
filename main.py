@@ -160,11 +160,11 @@ class LadderApp(App):
         # Create button for settings
         tournament_settings_button = gui.Button('Settings')
         tournament_settings_button.set_on_click_listener(self,
-            'tourn_set_dialog')
+            'build_tournament_settings_dialog')
 
         finals_settings_button = gui.Button('Settings')
         finals_settings_button.set_on_click_listener(self,
-            'finals_settings_dialog')
+            'build_finals_settings_dialog')
 
         tournament_select_container = gui.HBox(width=self.base_width,
                                                height=self.element_height)
@@ -190,7 +190,7 @@ class LadderApp(App):
         '''On change in dropdown selection, set new selected finals.'''
         self.finals = self.available_finals[value]
 
-    def tourn_set_dialog(self):
+    def build_tournament_settings_dialog(self):
         '''Build tournament settings dialog.'''
 
         self.tourn_set_dialog = gui.GenericDialog(title='Tournament Settings',
@@ -221,7 +221,7 @@ class LadderApp(App):
 
         self.tournament['settings'] = new_settings
 
-    def finals_settings_dialog(self):
+    def build_finals_settings_dialog(self):
         '''Build finals settings dialog.'''
 
         self.finals_settings_dialog = gui.GenericDialog(title='Finals Settings',
