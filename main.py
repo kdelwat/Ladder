@@ -270,11 +270,11 @@ class LadderApp(App):
         buttons.append(self.delete_row)
         
         self.load_teams = gui.Button('Load teams')
-        self.load_teams.set_on_click_listener(self, 'load_table_teams')
+        self.load_teams.set_on_click_listener(self, 'load_table_file_select')
         buttons.append(self.load_teams)
         
         self.save_teams = gui.Button('Save teams')
-        self.save_teams.set_on_click_listener(self, 'save_table_teams')
+        self.save_teams.set_on_click_listener(self, 'save_table_file_select')
         buttons.append(self.save_teams)
            
         # Add widgets to main container. Keys are specified to ensure that
@@ -292,19 +292,38 @@ class LadderApp(App):
         self.container.append(self.simulate, key='simulate')
         self.container.append(next_button, key='next_button')
     
-    def load_table_teams(self):
+    def load_table_file_select(self):
+        '''Open a file selection dialog to choose a team csv file
+        to load.'''
+        self.load_table_dialog = gui.FileSelectionDialog('Load Teams', 'Select csv file to load', False, '.')
+        self.load_table_dialog.set_on_confirm_value_listener(self, 'load_table_teams')
+        self.load_table_dialog.show(self)
+        
+    def save_table_file_select(self):
+        '''Open a file selection dialog to choose a team csv file
+        to load.'''
+        self.save_table_dialog = gui.InputDialog('Save Teams', 'Input file name', width=self.base_width)
+        self.save_table_dialog.set_on_confirm_value_listener(self, 'save_table_teams')
+        self.save_table_dialog.show(self)
+
+    def load_table_teams(self, filelist):
         '''Load from file an array of teams, which are loaded into the
         editable teams table.'''
-        teams = ladder.load_teams('data.csv')
+        
+        # Get the filename selected from file selection dialog
+        filename = filelist[0]
+        
+        # Load teams from file
+        teams = ladder.load_teams(filename)
 
         # By running the build table function again, the widgets are 
         # overwritten with the values in the populate variable, namely
         # the loaded teams.
         self.editable_table(False, populate=teams)
     
-    def save_table_teams(self):
-        '''Saves the internal teams array to a file.'''
-        ladder.save_teams(self.teams, 'teamout.csv')
+    def save_table_teams(self, value):
+        '''Saves the internal teams array to a filename, specified by value.'''
+        ladder.save_teams(self.teams, value)
 
     def store_teams(self):
         ladder.add_teams(self.teams)
