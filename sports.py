@@ -28,7 +28,7 @@ def basic_game(team1, team2, teams, settings):
 
 def cricket(team1, team2, teams, settings):
     '''Simulate a game of cricket.'''
-        
+    
     if teams[team1]['Strength'] == teams[team2]['Strength']:
         result = DRAW
         winner = team1

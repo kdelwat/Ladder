@@ -332,10 +332,26 @@ class LadderApp(App):
         ladder.save_teams(self.teams, value)
 
     def simulate(self):
+        '''Use current settings to run a simulation.'''
+        
+        # Add teams to ladder module
         ladder.add_teams(self.teams)
         
-        # Simulate main season and obtain final ladder
-        ladder_class = ladder.simulate_season(game=self.sport, structure=self.tournament)
+        # Create main season simulator, represented by a generator.
+        season_simulator = ladder.simulate_season(game=self.sport, structure=self.tournament)
+        
+        # Iterate through the season, stopping if the status returned is not an 
+        # integer, in which case the final ladder has been returned.
+        generator_status = 0
+        
+        while type(generator_status) == int:
+            generator_status = next(season_simulator)
+            print(generator_status)
+
+        ladder_class = generator_status
+        
+        # Print the ladder after the main season
+        ladder_class.print_ladder()
         
         # Simulate finals
         ladder.simulate_finals(ladder=ladder_class, structure=self.finals)

@@ -312,17 +312,26 @@ def simulate_season(teams=teams, game=sports.games['Cricket'], structure=tournam
 
     ladder = Ladder(len(fixture), teams)
     
-    play_fixture(fixture, ladder, game)
+    for round_number, round_matches in enumerate(fixture):
+        for match in round_matches:
+            result = play(match[0], match[1], game, ladder)
+            store(result, round_number + 1)
+        yield round_number
+    
+    #play_fixture(fixture, ladder, game)
 
-    ladder.print_ladder()
+    #ladder.print_ladder()
     
     output_data('out.csv')
     
-    return ladder
+    yield ladder
+    
+    return
 
 def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'], structure=finals_structures['Elimination']):
     
     # Sanitise settings by converting all fields possible to int.
+    game['settings'] = clean_dictionary(game['settings'])
     structure['settings'] = clean_dictionary(structure['settings'])
     
     structure['function_name'](teams, game, structure['settings'], ladder)
