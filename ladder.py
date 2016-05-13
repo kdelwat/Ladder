@@ -27,7 +27,7 @@ class Ladder:
 
         for team in teams:
             entry = {}
-            entry['Name'] = team['Name']
+            entry['Name'] = team
             entry['Win'] = 0
             entry['Loss'] = 0
             entry['Draw'] = 0
@@ -90,7 +90,7 @@ def play(team1, team2, game, ladder=None):
     # Return the result of a match played between two teams according to
     # the rules of a given game. If a ladder is supplied, the result is
     # recorded in the ladder.
-    result = game['function_name'](team1, team2, game['settings'])
+    result = game['function_name']((team1, teams[team1]), (team2, teams[team2]), game['settings'])
 
     if ladder is not None:
         ladder.record_result(result)
@@ -148,23 +148,27 @@ def loop_matches(teams):
 
 
 def round_robin(teams, settings):
-    # Generate a round-robin fixture using the algorithm from
-    # https://en.wikipedia.org/wiki/Round-robin_tournament. Teams
-    # will play each other n times.
+    '''Generate a round-robin fixture using the algorithm from
+    https://en.wikipedia.org/wiki/Round-robin_tournament. Teams
+    will play each other n times.
 
-    # Add a dummy team to support byes in competitions with an uneven number
-    # of teams.
-    if len(teams) % 2 != 0:
-        teams.append('BYE')
+    Add a dummy team to support byes in competitions with an uneven number
+    of teams.'''
     
-    number_of_rounds = len(teams) - 1
+    # Get list of team names, adding BYE team if necessary
+    team_names = list(teams.keys())
+    
+    if len(team_names) % 2 != 0:
+        team_names.append('BYE')
+    
+    number_of_rounds = len(team_names) - 1
     rounds = []
     
     for _ in range(settings['revolutions']):
         for r in range(number_of_rounds):
-            matches = loop_matches(teams)
+            matches = loop_matches(team_names)
             rounds.append(matches)
-            teams = rotate_except_first(teams)
+            team_names = rotate_except_first(team_names)
 
     return rounds
 
@@ -298,11 +302,14 @@ def simulate_season(teams=teams, game=sports.games['Cricket'], structure=tournam
     structure['settings'] = clean_dictionary(structure['settings'])
     
     fixture = structure['function_name'](teams, structure['settings'])
+
     ladder = Ladder(len(fixture), teams)
     
     play_fixture(fixture, ladder, game)
 
     ladder.print_ladder()
+    
+    output_data('out.csv')
     
     return ladder
 
@@ -318,7 +325,14 @@ def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'], structure
 # simple_simulate(teams, football, round_robin, elimination)
 
 
-teams = [{'Name': 'Melbourne Stars', 'Strength': 8}, {'Name': 'Melbourne Renegades', 'Strength': 5}, {'Name': 'Sydney Thunder', 'Strength': 10}, {'Name': 'Sydney Sixers', 'Strength': 6}, {'Name': 'Adelaide Strikers', 'Strength': 7}, {'Name': 'Hobart Hurricanes', 'Strength': 4}, {'Name': 'Brisbane Heat', 'Strength': 5}, {'Name': 'Perth Scorchers', 'Strength': 7}]
+teams = {'Melbourne Stars': {'Strength': 8},
+ 'Melbourne Renegades': {'Strength': 5},
+ 'Sydney Thunder': {'Strength': 10},
+ 'Sydney Sixers': {'Strength': 6},
+ 'Adelaide Strikers': {'Strength': 7},
+ 'Hobart Hurricanes': {'Strength': 4},
+ 'Brisbane Heat': {'Strength': 5},
+ 'Perth Scorchers': {'Strength': 7}}
 
 ladder = simulate_season(teams=teams)
-simulate_finals(ladder, teams=teams)
+#simulate_finals(ladder, teams=teams)

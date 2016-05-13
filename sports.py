@@ -16,8 +16,8 @@ def basic_game(team1, team2, settings):
     # If the game has a winner, the winner is set to the name of the winning
     # team and the loser to the name of the losing team. In the event of a
     # draw, order does not matter, but both variables must still be filled.
-    winner = team1['Name']
-    loser = team2['Name']
+    winner = team1[0]
+    loser = team2[0]
 
     # All extra game statistics are stored in the stats dictionary. The key for
     # each entry is the name of the statistic.
@@ -27,19 +27,28 @@ def basic_game(team1, team2, settings):
     return (result, winner, loser, stats)
 
 def cricket(team1, team2, settings):
-    # Simulate a game of cricket.
-    if team1['Strength'] == team2['Strength']:
+    '''Simulate a game of cricket.'''
+    
+    # Team tuples contain the following: (team name, team statistics).
+    # Unpack tuples for ease of use.
+    team1_name = team1[0]
+    team2_name = team2[0]
+    
+    team1_stats = team1[1]
+    team2_stats = team2[1]
+    
+    if team1_stats['Strength'] == team2_stats['Strength']:
         result = DRAW
-        winner = team1['Name']
-        loser = team2['Name']
+        winner = team1_name
+        loser = team2_name
     else:
         result = WIN
-        if team1['Strength'] > team2['Strength']:
-            winner = team1['Name']
-            loser = team2['Name']
+        if team1_stats['Strength'] > team2_stats['Strength']:
+            winner = team1_name
+            loser = team2_name
         else:
-            winner = team2['Name']
-            loser = team1['Name']
+            winner = team2_name
+            loser = team1_name
 
     # Generate winner statistics
     winning_runs = random.randint(settings['min_runs'], settings['max_runs'])
@@ -60,19 +69,28 @@ def cricket(team1, team2, settings):
     return (result, winner, loser, stats)
 
 def football(team1, team2, settings):
-    # Simulate a game of football (soccer).
-    if team1['Strength'] == team2['Strength']:
+    '''Simulate a game of football (soccer).'''
+    
+    # Team tuples contain the following: (team name, team statistics).
+    # Unpack tuples for ease of use.
+    team1_name = team1[0]
+    team2_name = team2[0]
+    
+    team1_stats = team1[1]
+    team2_stats = team2[1]
+    
+    if team1_stats['Strength'] == team2_stats['Strength']:
         result = DRAW
-        winner = team1['Name']
-        loser = team2['Name']
+        winner = team1_name
+        loser = team2_name
     else:
         result = WIN
-        if team1['Strength'] > team2['Strength']:
-            winner = team1['Name']
-            loser = team2['Name']
+        if team1_stats['Strength'] > team2_stats['Strength']:
+            winner = team1_name
+            loser = team2_name
         else:
-            winner = team2['Name']
-            loser = team1['Name']
+            winner = team2_name
+            loser = team1_name
 
     # Generate winner statistics
     winning_goals = random.randint(1, 3)
