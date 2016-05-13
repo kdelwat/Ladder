@@ -21,8 +21,8 @@ class Ladder:
         self.init_ladder(teams)
 
     def init_ladder(self, teams):
-        # Create a blank ladder with an entry for each team, including W/L/D/P
-        # statistics
+        '''Create a blank ladder with an entry for each team, including W/L/D/P
+        statistics'''
         self.ladder = []
 
         for team in teams:
@@ -45,7 +45,7 @@ class Ladder:
             raise ValueError('Result type not supported!')
 
     def team_index(self, name):
-        # Get the index of a team in the ladder by a given name.
+        '''Get the index of a team in the ladder by a given name.'''
         for index, team in enumerate(self.ladder):
             if team['Name'] == name:
                 return index
@@ -68,7 +68,7 @@ class Ladder:
         self.ladder.sort(key=itemgetter('Points'), reverse=True)
 
     def top(self, n):
-        # Return top n teams in ladder.
+        '''Return top n teams in ladder.'''
         self.sort_ladder()
         return self.ladder[:n]
 
@@ -99,9 +99,9 @@ class Ladder:
 
 
 def play(team1, team2, game, ladder=None):
-    # Return the result of a match played between two teams according to
-    # the rules of a given game. If a ladder is supplied, the result is
-    # recorded in the ladder.
+    '''Return the result of a match played between two teams according to
+    the rules of a given game. If a ladder is supplied, the result is
+    recorded in the ladder.'''
 
     global teams
 
@@ -117,17 +117,17 @@ def play(team1, team2, game, ladder=None):
     return result
 
 
-def rotate_except_first(l):
-    # Rotate a list of teams excluding the first team.
-    # For example,
-    # 1 2 3 4 5 6 -> 1 6 2 3 4 5
-    new = [l[0], l[-1]]
-    for i in range(2, len(l)):
-        new.append(l[i-1])
+def rotate_except_first(team_list):
+    '''Rotate a list of teams excluding the first team.
+    For example,
+    1 2 3 4 5 6 -> 1 6 2 3 4 5'''
+    new = [team_list[0], team_list[-1]]
+    for i in range(2, len(team_list)):
+        new.append(team_list[i-1])
     return new
 
 
-def elimination(teams, game, settings, ladder):
+def elimination(game, settings, ladder):
     '''Play a simple elimination fixture for the given teams.'''
 
     # Get the top n teams from the ladder to play in fixture
@@ -137,14 +137,14 @@ def elimination(teams, game, settings, ladder):
 
     number_of_rounds = int(math.log(len(finalists), 2))
 
-    for n in range(number_of_rounds):
+    for round_no in range(number_of_rounds):
         matches = loop_matches(finalists)
 
         # Play all matches in round
         results = [play(match[0], match[1], game) for match in matches]
 
         for result in results:
-            store(result, 'Finals ' + str(n + 1))
+            store(result, 'Finals ' + str(round_no + 1))
 
             # Output match
             print('\n' + result[1] + ' vs ' + result[2])
@@ -157,12 +157,12 @@ def elimination(teams, game, settings, ladder):
 
 
 def loop_matches(teams):
-    # Split the list of teams into two halves and them zip them in matches.
-    # For example, 1 2 3 4 5 6, or:
-    # 1 2 3
-    # 6 5 4
-    # Would become,
-    # (1, 6), (2, 5), (3, 4)
+    '''Split the list of teams into two halves and them zip them in matches.
+    For example, 1 2 3 4 5 6, or:
+    1 2 3
+    6 5 4
+    Would become,
+    (1, 6), (2, 5), (3, 4)'''
     return list(zip(teams[:len(teams)//2], reversed(teams[len(teams)//2:])))
 
 
@@ -184,7 +184,7 @@ def round_robin(teams, settings):
     rounds = []
 
     for _ in range(settings['revolutions']):
-        for r in range(number_of_rounds):
+        for _ in range(number_of_rounds):
             matches = loop_matches(team_names)
             rounds.append(matches)
             team_names = rotate_except_first(team_names)
@@ -193,6 +193,8 @@ def round_robin(teams, settings):
 
 
 def convert_to_int(n):
+    '''Attempts to convert n to an int. If successful,
+    return the converted value. Otherwise, return the original.'''
     try:
         return int(n)
     except ValueError:
@@ -241,7 +243,7 @@ def add_teams(table):
 
 
 def store(result, round_no):
-    # Format result into list and store in output buffer.
+    '''Format result into list and store in output buffer.'''
     row = {'Round': round_no}
 
     if result[0] == DRAW:
@@ -259,7 +261,7 @@ def store(result, round_no):
 
 
 def output_data(filename):
-    # Flush output buffer to filename.
+    '''Flush output buffer to filename.'''
     with open(filename, 'w') as f:
         # Add mandatory field names
         fieldnames = ['Round', 'Winner', 'Loser']
@@ -275,9 +277,9 @@ def output_data(filename):
 
 
 def play_fixture(fixture, ladder, game):
-    # Take a given fixture of matches (a list of lists of matches).
-    # Play each round, getting the result using the specified game
-    # and store the result.
+    '''Take a given fixture of matches (a list of lists of matches).
+    Play each round, getting the result using the specified game
+    and store the result.'''
     for round_number, round_matches in enumerate(fixture):
         for match in round_matches:
             result = play(match[0], match[1], game, ladder)
@@ -329,6 +331,6 @@ def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'],
     game['settings'] = clean_dictionary(game['settings'])
     structure['settings'] = clean_dictionary(structure['settings'])
 
-    structure['function_name'](teams, game, structure['settings'], ladder)
+    structure['function_name'](game, structure['settings'], ladder)
 
     output_data('out.csv')
