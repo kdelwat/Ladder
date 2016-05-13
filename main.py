@@ -36,9 +36,13 @@ class LadderApp(App):
         self.tournament_select()
         
         # Create button to advance to stage 4
-        simulate = gui.Button('Simulate')
-        simulate.set_on_click_listener(self, 'store_teams')
-        self.container.append(simulate)
+        simulate_button = gui.Button('Simulate')
+        simulate_button.set_on_click_listener(self, 'stage_4')
+        self.container.append(simulate_button)
+    
+    def stage_4(self):
+        '''Called by the next button in stage 3, run simulation.'''
+        self.simulate()
 
     def sport_select(self):
         '''Builds sport selection area.'''
@@ -327,7 +331,7 @@ class LadderApp(App):
         '''Saves the internal teams array to a filename, specified by value.'''
         ladder.save_teams(self.teams, value)
 
-    def store_teams(self):
+    def simulate(self):
         ladder.add_teams(self.teams)
         print('Add teams:' + str(self.teams))
         ladder.simple_simulate(game=self.sport, structure=self.tournament, finals_structure=self.finals)
