@@ -3,7 +3,7 @@ import math
 from operator import itemgetter
 from tabulate import tabulate
 
-from sports import cricket, football
+import sports
 
 DRAW = 0
 WIN = 1
@@ -11,6 +11,7 @@ LOSS = 2
 
 output = []
 teams = []
+
 
 class Ladder:
 
@@ -208,6 +209,7 @@ def add_teams(table):
             team[field[0]] = convert_to_int(field[1])
 
         teams.append(team)
+    print(teams)
 
 def store(result, round_no):
     # Format result into list and store in output buffer.
@@ -259,8 +261,14 @@ def clean_dictionary(dic):
         dic[key] = convert_to_int(dic[key])
     return dic
 
+# Define default characteristics of each tournament and finals structure.
+tournament_structures = {'Round Robin': {'function_name':round_robin,
+                                         'settings': {'revolutions':'1'}}}
 
-def simple_simulate(teams=teams, game=football, structure=round_robin, finals_structure=elimination, final_n=4):
+finals_structures = {'Elimination': {'function_name':elimination,
+                                     'settings': {'top_teams':'4'}}}
+
+def simple_simulate(teams=teams, game=sports.games['Cricket'], structure=tournament_structures['Round Robin'], finals_structure=finals_structures['Elimination'], final_n=4):
     '''Simulate a league using the given teams, game, structure, finals
     structure, and number of league winners to move on to the finals.'''
 
@@ -283,13 +291,34 @@ def simple_simulate(teams=teams, game=football, structure=round_robin, finals_st
     
     output_data('out.csv')
 
-# teams = load_teams('data.csv')
+def simulate_season(teams=teams, game=sports.games['Cricket'], structure=tournament_structures['Round Robin']):
+    
+    # Sanitise settings by converting all fields possible to int.
+    game['settings'] = clean_dictionary(game['settings'])
+    structure['settings'] = clean_dictionary(structure['settings'])
+    
+    fixture = structure['function_name'](teams, structure['settings'])
+    ladder = Ladder(len(fixture), teams)
+    
+    play_fixture(fixture, ladder, game)
 
+    ladder.print_ladder()
+    
+    return ladder
+
+def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'], structure=finals_structures['Elimination']):
+    
+    # Sanitise settings by converting all fields possible to int.
+    structure['settings'] = clean_dictionary(structure['settings'])
+    
+    structure['function_name'](teams, game, structure['settings'], ladder)
+    
+    output_data('out.csv')
+    
 # simple_simulate(teams, football, round_robin, elimination)
 
-# Define default characteristics of each tournament and finals structure.
-tournament_structures = {'Round Robin': {'function_name':round_robin,
-                                         'settings': {'revolutions':'1'}}}
 
-finals_structures = {'Elimination': {'function_name':elimination,
-                                     'settings': {'top_teams':'4'}}}
+teams = [{'Name': 'Melbourne Stars', 'Strength': 8}, {'Name': 'Melbourne Renegades', 'Strength': 5}, {'Name': 'Sydney Thunder', 'Strength': 10}, {'Name': 'Sydney Sixers', 'Strength': 6}, {'Name': 'Adelaide Strikers', 'Strength': 7}, {'Name': 'Hobart Hurricanes', 'Strength': 4}, {'Name': 'Brisbane Heat', 'Strength': 5}, {'Name': 'Perth Scorchers', 'Strength': 7}]
+
+ladder = simulate_season(teams=teams)
+simulate_finals(ladder, teams=teams)
