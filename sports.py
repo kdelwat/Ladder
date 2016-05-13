@@ -5,7 +5,8 @@ import random
 DRAW = 0
 WIN = 1
 LOSS = 2
-     
+
+
 def basic_game(team1, team2, teams, settings):
     # A template for all games. The game must take two team dictionaries.
 
@@ -26,9 +27,10 @@ def basic_game(team1, team2, teams, settings):
     # The game must return this information in the following tuple format.
     return (result, winner, loser, stats)
 
+
 def cricket(team1, team2, teams, settings):
     '''Simulate a game of cricket.'''
-    
+
     if teams[team1]['Strength'] == teams[team2]['Strength']:
         result = DRAW
         winner = team1
@@ -59,13 +61,14 @@ def cricket(team1, team2, teams, settings):
 
     stats = {'Winning Score': winning_score,
              'Losing Score': losing_score}
-    
+
     # Return results tuple and modified teams dictionary
     return ((result, winner, loser, stats), teams)
 
+
 def football(team1, team2, teams, settings):
     '''Simulate a game of football (soccer).'''
-    
+
     if teams[team1]['Strength'] == teams[team2]['Strength']:
         result = DRAW
         winner = team1
@@ -94,10 +97,10 @@ def football(team1, team2, teams, settings):
 
 # Define default characteristics of each game.
 games = {'Cricket': {'parameters': ['Name', 'Strength'],
-                     'function_name':cricket,
-                     'settings': {'max_runs':'180',
-                                  'min_runs':'120'}},
+                     'function_name': cricket,
+                     'settings': {'max_runs': '180',
+                                  'min_runs': '120'}},
          'Football (soccer)': {'parameters': ['Name', 'Strength', 'Goals'],
-                               'function_name':football,
-                               'settings': {'max_goals':'3',
-                                            'min_goals':'1'}}}
+                               'function_name': football,
+                               'settings': {'max_goals': '3',
+                                            'min_goals': '1'}}}

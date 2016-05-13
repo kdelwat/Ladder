@@ -71,19 +71,19 @@ class Ladder:
         # Return top n teams in ladder.
         self.sort_ladder()
         return self.ladder[:n]
-    
+
     def matrix(self):
         '''Return matrix to display as table.'''
         self.sort_ladder()
         ladder_matrix = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
         for row in self.ladder:
             ladder_matrix.append([row['Name'],
-                              str(row['Win']),
-                              str(row['Loss']),
-                              str(row['Draw']),
-                              str(row['Points'])])
+                                  str(row['Win']),
+                                  str(row['Loss']),
+                                  str(row['Draw']),
+                                  str(row['Points'])])
         return ladder_matrix
-        
+
     def print_ladder(self):
         self.sort_ladder()
         printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
@@ -102,11 +102,14 @@ def play(team1, team2, game, ladder=None):
     # Return the result of a match played between two teams according to
     # the rules of a given game. If a ladder is supplied, the result is
     # recorded in the ladder.
-    
+
     global teams
-    
+
     # Get result and new teams dictionary back from game
-    result, teams = game['function_name'](team1, team2, teams, game['settings'])
+    result, teams = game['function_name'](team1,
+                                          team2,
+                                          teams,
+                                          game['settings'])
 
     if ladder is not None:
         ladder.record_result(result)
@@ -126,12 +129,12 @@ def rotate_except_first(l):
 
 def elimination(teams, game, settings, ladder):
     '''Play a simple elimination fixture for the given teams.'''
-    
+
     # Get the top n teams from the ladder to play in fixture
     final_n = settings['top_teams']
 
     finalists = [team['Name'] for team in ladder.top(final_n)]
-    
+
     number_of_rounds = int(math.log(len(finalists), 2))
 
     for n in range(number_of_rounds):
@@ -148,7 +151,7 @@ def elimination(teams, game, settings, ladder):
             print('Winner:', result[1])
 
             # Eliminate losing teams
-            finalists = [finalist for finalist in finalists if finalist != result[2]]
+            finalists = [f for f in finalists if f != result[2]]
 
     return finalists
 
@@ -170,16 +173,16 @@ def round_robin(teams, settings):
 
     Add a dummy team to support byes in competitions with an uneven number
     of teams.'''
-    
+
     # Get list of team names, adding BYE team if necessary
     team_names = list(teams.keys())
-    
+
     if len(team_names) % 2 != 0:
         team_names.append('BYE')
-    
+
     number_of_rounds = len(team_names) - 1
     rounds = []
-    
+
     for _ in range(settings['revolutions']):
         for r in range(number_of_rounds):
             matches = loop_matches(team_names)
@@ -195,6 +198,7 @@ def convert_to_int(n):
     except ValueError:
         return n
 
+
 def load_teams(filename):
     '''Load teams from csv file filename as array'''
 
@@ -204,28 +208,30 @@ def load_teams(filename):
 
     return teams
 
+
 def save_teams(team_array, filename):
     '''Saves team_array to filename.'''
-    
+
     with open(filename, 'w') as f:
         writer = csv.writer(f, delimiter=',')
-        
+
         for row in team_array:
             writer.writerow(row)
-    
+
+
 def add_teams(table):
-    '''Recieves a table from the GUI and converts it into a list of team 
+    '''Recieves a table from the GUI and converts it into a list of team
     dictionaries.'''
 
     # Isolate field list and remove name field
     fields = table.pop(0)
     fields.pop(0)
-    
-    # Loop through teams, converting each to dictionary and adding them to 
+
+    # Loop through teams, converting each to dictionary and adding them to
     # global teams list
     for row in table:
         name = row.pop(0)
-        
+
         team_attributes = {}
 
         for field in zip(fields, row):
@@ -285,82 +291,44 @@ def clean_dictionary(dic):
     return dic
 
 # Define default characteristics of each tournament and finals structure.
-tournament_structures = {'Round Robin': {'function_name':round_robin,
-                                         'settings': {'revolutions':'1'}}}
+tournament_structures = {'Round Robin': {'function_name': round_robin,
+                                         'settings': {'revolutions': '1'}}}
 
-finals_structures = {'Elimination': {'function_name':elimination,
-                                     'settings': {'top_teams':'4'}}}
+finals_structures = {'Elimination': {'function_name': elimination,
+                                     'settings': {'top_teams': '4'}}}
 
-def simple_simulate(teams=teams, game=sports.games['Cricket'], structure=tournament_structures['Round Robin'], finals_structure=finals_structures['Elimination'], final_n=4):
-    '''Simulate a league using the given teams, game, structure, finals
-    structure, and number of league winners to move on to the finals.'''
+
+def simulate_season(teams=teams, game=sports.games['Cricket'],
+                    structure=tournament_structures['Round Robin']):
 
     # Sanitise settings by converting all fields possible to int.
     game['settings'] = clean_dictionary(game['settings'])
     structure['settings'] = clean_dictionary(structure['settings'])
-    finals_structure['settings'] = clean_dictionary(finals_structure['settings'])    
-        
-    fixture = structure['function_name'](teams, structure['settings'])
-    ladder = Ladder(len(fixture), teams)
-    
-    play_fixture(fixture, ladder, game)
 
-    ladder.print_ladder()
-
-    finalist_names = [team['Name'] for team in ladder.top(final_n)]
-    finalists = [team for team in teams if team['Name'] in finalist_names]
-
-    finals_structure['function_name'](finalists, game, finals_structure['settings'], ladder)
-    
-    output_data('out.csv')
-
-def simulate_season(teams=teams, game=sports.games['Cricket'], structure=tournament_structures['Round Robin']):
-    
-    # Sanitise settings by converting all fields possible to int.
-    game['settings'] = clean_dictionary(game['settings'])
-    structure['settings'] = clean_dictionary(structure['settings'])
-    
     fixture = structure['function_name'](teams, structure['settings'])
 
     ladder = Ladder(len(fixture), teams)
-    
+
     for round_number, round_matches in enumerate(fixture):
         for match in round_matches:
             result = play(match[0], match[1], game, ladder)
             store(result, round_number + 1)
         yield round_number
-    
-    #play_fixture(fixture, ladder, game)
 
-    #ladder.print_ladder()
-    
     output_data('out.csv')
-    
+
     yield ladder
-    
+
     return
 
-def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'], structure=finals_structures['Elimination']):
-    
+
+def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'],
+                    structure=finals_structures['Elimination']):
+
     # Sanitise settings by converting all fields possible to int.
     game['settings'] = clean_dictionary(game['settings'])
     structure['settings'] = clean_dictionary(structure['settings'])
-    
+
     structure['function_name'](teams, game, structure['settings'], ladder)
-    
+
     output_data('out.csv')
-    
-# simple_simulate(teams, football, round_robin, elimination)
-
-
-#teams = {'Melbourne Stars': {'Strength': 8},
-# 'Melbourne Renegades': {'Strength': 5},
-# 'Sydney Thunder': {'Strength': 10},
-# 'Sydney Sixers': {'Strength': 6},
-# 'Adelaide Strikers': {'Strength': 7},
-# 'Hobart Hurricanes': {'Strength': 4},
-# 'Brisbane Heat': {'Strength': 5},
-# 'Perth Scorchers': {'Strength': 7}}
-
-#ladder = simulate_season(teams=teams)
-#simulate_finals(ladder, teams=teams)
