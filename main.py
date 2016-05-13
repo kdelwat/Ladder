@@ -34,6 +34,11 @@ class LadderApp(App):
         '''Called by the next button in stage 2, initialise tournament
         settings.'''
         self.tournament_select()
+        
+        # Create button to advance to stage 4
+        simulate = gui.Button('Simulate')
+        simulate.set_on_click_listener(self, 'store_teams')
+        self.container.append(simulate)
 
     def sport_select(self):
         '''Builds sport selection area.'''
@@ -283,13 +288,10 @@ class LadderApp(App):
         self.container.append(self.new_row, key='new_row')
         self.container.append(buttons, key='buttons')
         
-        # Create button to run simulation and to advance to the next stage
-        self.simulate = gui.Button('Simulate')
-        self.simulate.set_on_click_listener(self, 'store_teams')
+        # Create button to to advance to the next stage
         next_button = gui.Button('Next')
         next_button.set_on_click_listener(self, 'stage_3')
 
-        self.container.append(self.simulate, key='simulate')
         self.container.append(next_button, key='next_button')
     
     def load_table_file_select(self):
