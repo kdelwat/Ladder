@@ -90,7 +90,8 @@ def play(team1, team2, game, ladder=None):
     # Return the result of a match played between two teams according to
     # the rules of a given game. If a ladder is supplied, the result is
     # recorded in the ladder.
-    result = game['function_name']((team1, teams[team1]), (team2, teams[team2]), game['settings'])
+    #result = game['function_name']((team1, teams[team1]), (team2, teams[team2]), game['settings'])
+    result = game['function_name'](team1, team2, teams, game['settings'])
 
     if ladder is not None:
         ladder.record_result(result)
