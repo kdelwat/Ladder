@@ -352,10 +352,21 @@ class LadderApp(App):
         
         # Print the ladder after the main season
         ladder_class.print_ladder()
+        self.output_ladder(ladder_class)
         
         # Simulate finals
         ladder.simulate_finals(ladder=ladder_class, structure=self.finals)
     
+    def output_ladder(self, ladder):
+        '''Adds a ladder object as a table to the GUI.'''
+        self.ladder_table = gui.Table(width=self.base_width,
+                                     height=400,
+                                     margin='10px')
+        
+        self.ladder_table.from_2d_matrix(ladder.matrix())
+        
+        self.container.append(self.ladder_table, key='ladder_table')
+        
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 
         table.'''

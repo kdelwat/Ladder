@@ -71,7 +71,19 @@ class Ladder:
         # Return top n teams in ladder.
         self.sort_ladder()
         return self.ladder[:n]
-
+    
+    def matrix(self):
+        '''Return matrix to display as table.'''
+        self.sort_ladder()
+        ladder_matrix = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
+        for row in self.ladder:
+            ladder_matrix.append([row['Name'],
+                              str(row['Win']),
+                              str(row['Loss']),
+                              str(row['Draw']),
+                              str(row['Points'])])
+        return ladder_matrix
+        
     def print_ladder(self):
         self.sort_ladder()
         printable = [['Name', 'Win', 'Loss', 'Draw', 'Points']]
