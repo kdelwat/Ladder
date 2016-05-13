@@ -109,12 +109,12 @@ def rotate_except_first(l):
 
 
 def elimination(teams, game, settings, ladder):
-    # Play a simple elimination fixture for the given teams.
+    '''Play a simple elimination fixture for the given teams.'''
     
     # Get the top n teams from the ladder to play in fixture
     final_n = settings['top_teams']
-    finalist_names = [team['Name'] for team in ladder.top(final_n)]
-    finalists = [team for team in teams if team['Name'] in finalist_names]
+
+    finalists = [team['Name'] for team in ladder.top(final_n)]
     
     number_of_rounds = int(math.log(len(finalists), 2))
 
@@ -132,7 +132,7 @@ def elimination(teams, game, settings, ladder):
             print('Winner:', result[1])
 
             # Eliminate losing teams
-            finalists = [finalist for finalist in finalists if finalist['Name'] != result[2]]
+            finalists = [finalist for finalist in finalists if finalist != result[2]]
 
     return finalists
 
@@ -335,4 +335,4 @@ teams = {'Melbourne Stars': {'Strength': 8},
  'Perth Scorchers': {'Strength': 7}}
 
 ladder = simulate_season(teams=teams)
-#simulate_finals(ladder, teams=teams)
+simulate_finals(ladder, teams=teams)
