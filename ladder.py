@@ -10,7 +10,7 @@ WIN = 1
 LOSS = 2
 
 output = []
-teams = []
+teams = {}
 
 
 class Ladder:
@@ -204,20 +204,23 @@ def save_teams(team_array, filename):
 def add_teams(table):
     '''Recieves a table from the GUI and converts it into a list of team 
     dictionaries.'''
-    
-    # Isolate field list
+
+    # Isolate field list and remove name field
     fields = table.pop(0)
+    fields.pop(0)
     
     # Loop through teams, converting each to dictionary and adding them to 
     # global teams list
     for row in table:
-        team = {}
+        name = row.pop(0)
+        
+        team_attributes = {}
 
         for field in zip(fields, row):
-            team[field[0]] = convert_to_int(field[1])
+            team_attributes[field[0]] = convert_to_int(field[1])
 
-        teams.append(team)
-    print(teams)
+        teams[name] = team_attributes
+
 
 def store(result, round_no):
     # Format result into list and store in output buffer.
@@ -329,14 +332,14 @@ def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'], structure
 # simple_simulate(teams, football, round_robin, elimination)
 
 
-teams = {'Melbourne Stars': {'Strength': 8},
- 'Melbourne Renegades': {'Strength': 5},
- 'Sydney Thunder': {'Strength': 10},
- 'Sydney Sixers': {'Strength': 6},
- 'Adelaide Strikers': {'Strength': 7},
- 'Hobart Hurricanes': {'Strength': 4},
- 'Brisbane Heat': {'Strength': 5},
- 'Perth Scorchers': {'Strength': 7}}
+#teams = {'Melbourne Stars': {'Strength': 8},
+# 'Melbourne Renegades': {'Strength': 5},
+# 'Sydney Thunder': {'Strength': 10},
+# 'Sydney Sixers': {'Strength': 6},
+# 'Adelaide Strikers': {'Strength': 7},
+# 'Hobart Hurricanes': {'Strength': 4},
+# 'Brisbane Heat': {'Strength': 5},
+# 'Perth Scorchers': {'Strength': 7}}
 
-ladder = simulate_season(teams=teams)
-simulate_finals(ladder, teams=teams)
+#ladder = simulate_season(teams=teams)
+#simulate_finals(ladder, teams=teams)

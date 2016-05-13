@@ -333,8 +333,12 @@ class LadderApp(App):
 
     def simulate(self):
         ladder.add_teams(self.teams)
-        print('Add teams:' + str(self.teams))
-        ladder.simple_simulate(game=self.sport, structure=self.tournament, finals_structure=self.finals)
+        
+        # Simulate main season and obtain final ladder
+        ladder_class = ladder.simulate_season(game=self.sport, structure=self.tournament)
+        
+        # Simulate finals
+        ladder.simulate_finals(ladder=ladder_class, structure=self.finals)
     
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team 

@@ -90,7 +90,7 @@ def football(team1, team2, teams, settings):
     stats = {'Winning Score': winning_goals,
              'Losing Score': losing_goals}
 
-    return (result, winner, loser, stats)
+    return ((result, winner, loser, stats), teams)
 
 # Define default characteristics of each game.
 games = {'Cricket': {'parameters': ['Name', 'Strength'],
