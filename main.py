@@ -287,6 +287,9 @@ class LadderApp(App):
                 # Add row to table, assigning it a new ID
                 self.teams_table_entries += 1
                 self.teams_table.append(row, key=str(self.teams_table_entries))
+
+            # Set table height correctly
+            self.teams_table_height = len(populate) * self.table_row_height
         else:
             # Othwerwise, just create a table with the supplied parameters.
             self.teams_table.from_2d_matrix([team_parameters])
@@ -328,6 +331,13 @@ class LadderApp(App):
         next_button.set_on_click_listener(self, 'stage_3')
 
         self.container.append(next_button, key='next_button')
+
+        # Set container and table height
+        self.container.set_size(self.base_width + 2 * self.side_padding,
+                                self.teams_table_height
+                                + 4 * self.element_height
+                                + self.base_height)
+        self.teams_table.set_size(self.base_width, self.teams_table_height)
 
     def load_table_file_select(self):
         '''Open a file selection dialog to choose a team csv file
@@ -448,6 +458,12 @@ class LadderApp(App):
         self.teams.append(raw_row)
 
         self.teams_table_height += self.table_row_height
+
+        # Set container and table height
+        self.container.set_size(self.base_width + 2 * self.side_padding,
+                                self.teams_table_height
+                                + 4 * self.element_height
+                                + self.base_height)
         self.teams_table.set_size(self.base_width, self.teams_table_height)
 
     def delete_table_row(self):
