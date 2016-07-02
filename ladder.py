@@ -137,6 +137,8 @@ def elimination(game, settings, ladder):
 
     number_of_rounds = int(math.log(len(finalists), 2))
 
+    report = [['Round', 'Winner', 'Winning Score', 'Loser', 'Losing Score']]
+
     for round_no in range(number_of_rounds):
         matches = loop_matches(finalists)
 
@@ -150,10 +152,12 @@ def elimination(game, settings, ladder):
             print('\n' + result[1] + ' vs ' + result[2])
             print('Winner:', result[1])
 
+            report.append([str(round_no + 1), result[1], result[3]['Winning Score'], result[2], result[3]['Losing Score']])
+
             # Eliminate losing teams
             finalists = [f for f in finalists if f != result[2]]
 
-    return finalists
+    return finalists, report
 
 
 def loop_matches(teams):
@@ -331,6 +335,8 @@ def simulate_finals(ladder, teams=teams, game=sports.games['Cricket'],
     game['settings'] = clean_dictionary(game['settings'])
     structure['settings'] = clean_dictionary(structure['settings'])
 
-    structure['function_name'](game, structure['settings'], ladder)
+    finalists, report = structure['function_name'](game, structure['settings'], ladder)
 
     output_data('out.csv')
+
+    return report

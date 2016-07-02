@@ -390,7 +390,14 @@ class LadderApp(App):
         self.output_ladder(ladder_class)
 
         # Simulate finals
-        ladder.simulate_finals(ladder=ladder_class, structure=self.finals)
+        report = ladder.simulate_finals(ladder=ladder_class, structure=self.finals)
+
+        # Display finals as a table
+        self.finals_table = gui.Table(width=self.base_width,
+                                      height=400,
+                                      margin='10px')
+        self.finals_table.from_2d_matrix(report)
+        self.container.append(self.finals_table, key='finals_table')
 
     def simulation_progress(self, message=''):
         '''Updates an output label with the contents of message.'''
