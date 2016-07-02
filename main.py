@@ -44,6 +44,11 @@ class LadderApp(App):
         simulate_button.set_on_click_listener(self, 'stage_4')
         self.container.append(simulate_button)
 
+        self.container.set_size(self.base_width + 2 * self.side_padding,
+                                self.teams_table_height
+                                + 7 * self.element_height
+                                + self.base_height)
+
     def stage_4(self):
         '''Called by the next button in stage 3, run simulation.'''
         self.simulate()
@@ -335,7 +340,7 @@ class LadderApp(App):
         # Set container and table height
         self.container.set_size(self.base_width + 2 * self.side_padding,
                                 self.teams_table_height
-                                + 4 * self.element_height
+                                + 6 * self.element_height
                                 + self.base_height)
         self.teams_table.set_size(self.base_width, self.teams_table_height)
 
@@ -413,25 +418,38 @@ class LadderApp(App):
     def output_ladder(self, ladder):
         '''Adds a ladder object as a table to the GUI.'''
 
-        row_no = len(ladder.matrix()) + 1
+        self.ladder_row_no = len(ladder.matrix()) + 1
 
         self.ladder_table = gui.Table(width=self.base_width,
-                                      height=self.table_row_height * row_no,
+                                      height=self.table_row_height * self.ladder_row_no,
                                       margin='10px')
 
         self.ladder_table.from_2d_matrix(ladder.matrix())
 
         self.container.append(self.ladder_table, key='ladder_table')
 
+        self.container.set_size(self.base_width + 2 * self.side_padding,
+                                self.teams_table_height
+                                + 9 * self.element_height
+                                + self.base_height
+                                + self.table_row_height * self.ladder_row_no)
+
     def output_finals(self, finals):
         '''Adds a table displaying finals games.'''
-        row_no = len(finals) + 1
+        self.finals_row_no = len(finals) + 1
 
         self.finals_table = gui.Table(width=self.base_width,
-                                      height=self.table_row_height * row_no,
+                                      height=self.table_row_height * self.finals_row_no,
                                       margin='10px')
         self.finals_table.from_2d_matrix(finals)
         self.container.append(self.finals_table, key='finals_table')
+
+        self.container.set_size(self.base_width + 2 * self.side_padding,
+                                self.teams_table_height
+                                + 9 * self.element_height
+                                + self.base_height
+                                + self.table_row_height * self.ladder_row_no
+                                + self.table_row_height * self.finals_row_no)
 
     def add_table_row(self):
         '''Adds row (from the input text area) to the end of the editable team
@@ -462,7 +480,7 @@ class LadderApp(App):
         # Set container and table height
         self.container.set_size(self.base_width + 2 * self.side_padding,
                                 self.teams_table_height
-                                + 4 * self.element_height
+                                + 6 * self.element_height
                                 + self.base_height)
         self.teams_table.set_size(self.base_width, self.teams_table_height)
 
