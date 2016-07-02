@@ -377,10 +377,11 @@ class LadderApp(App):
         # Iterate through the season, stopping if the status returned is not an
         # integer, in which case the final ladder has been returned.
         generator_status = 0
+        self.simulation_progress()
 
         while type(generator_status) == int:
+            self.simulation_progress(generator_status)
             generator_status = next(season_simulator)
-            print(generator_status)
 
         ladder_class = generator_status
 
@@ -390,6 +391,10 @@ class LadderApp(App):
 
         # Simulate finals
         ladder.simulate_finals(ladder=ladder_class, structure=self.finals)
+
+    def simulation_progress(self, message=''):
+        '''Updates an output label with the contents of message.'''
+        self.container.append(gui.Label(str(message)), key='progress_message')
 
     def output_ladder(self, ladder):
         '''Adds a ladder object as a table to the GUI.'''
