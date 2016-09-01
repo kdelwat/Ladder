@@ -61,14 +61,14 @@ class LadderApp(App):
         # Load sports from library specification.
         self.available_sports = sports.games
 
-        self.sport_dropdown = gui.DropDown(width=self.base_width,
+        self.sport_dropdown = gui.DropDown(width=self.base_width - 350,
                                            height=self.element_height)
         self.sport_dropdown.set_on_change_listener(self, 'set_sport')
 
         # Loop through sports and add to dropdown
         for sport in self.available_sports:
             self.sport_dropdown.append(gui.DropDownItem(sport,
-                                       width=self.base_width,
+                                       width=self.base_width - 350,
                                        height=self.element_height))
 
         # Set default sport
@@ -137,23 +137,23 @@ class LadderApp(App):
         self.available_tournaments = ladder.tournament_structures
         self.available_finals = ladder.finals_structures
 
-        self.tournament_dropdown = gui.DropDown(width=self.base_width,
+        self.tournament_dropdown = gui.DropDown(width=self.base_width - 200,
                                                 height=self.element_height)
         self.tournament_dropdown.set_on_change_listener(self, 'set_tournament')
 
-        self.finals_dropdown = gui.DropDown(width=self.base_width,
+        self.finals_dropdown = gui.DropDown(width=self.base_width - 200,
                                             height=self.element_height)
         self.finals_dropdown.set_on_change_listener(self, 'set_finals')
 
         # Loop through tournaments and add to dropdown
         for tournament in self.available_tournaments:
             self.tournament_dropdown.append(gui.DropDownItem(tournament,
-                                            width=self.base_width,
+                                            width=self.base_width - 200,
                                             height=self.element_height))
 
         for finals in self.available_finals:
             self.finals_dropdown.append(gui.DropDownItem(finals,
-                                        width=self.base_width,
+                                        width=self.base_width - 200,
                                         height=self.element_height))
 
         # Set default tournament
